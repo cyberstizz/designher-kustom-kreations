@@ -31,22 +31,8 @@ export default function SiteHeader({ cartCount = 0 }) {
             </svg>
           </button>
 
-          <Link
-            to="/cart"
-            className="icon-btn"
-            aria-label={`Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`}
-          >
-            <svg viewBox="0 0 24 24" fill="none" strokeWidth="1.6">
-              <path
-                d="M4 6h2l1.6 10.2A2 2 0 0 0 9.6 18h7.8a2 2 0 0 0 2-1.7L20.5 9H6.2"
-                stroke="currentColor"
-              />
-              <circle cx="10" cy="21" r="1.2" fill="currentColor" />
-              <circle cx="17" cy="21" r="1.2" fill="currentColor" />
-            </svg>
-            <span className="cart-badge" id="cartBadge" hidden={cartCount === 0}>
-              {cartCount}
-            </span>
+          <Link to="/custom" className="btn-quote">
+            Start a Kreation
           </Link>
         </div>
       </div>

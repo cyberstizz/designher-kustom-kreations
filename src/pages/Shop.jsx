@@ -63,7 +63,7 @@ export default function Shop() {
               <div className="card-info">
                 <span className="kicker">Sneakers</span>
                 <h3>Sapphire Row Converse</h3>
-                <span className="from">$185</span>
+                <span className="from">Made to order</span>
               </div>
               <span className="card-link"></span>
             </Link>
@@ -73,7 +73,7 @@ export default function Shop() {
               <div className="card-info">
                 <span className="kicker">Boots</span>
                 <h3>Diamond Girl Boots</h3>
-                <span className="from">$220</span>
+                <span className="from">Made to order</span>
               </div>
               <a href="#" className="card-link"></a>
             </div>
@@ -83,7 +83,7 @@ export default function Shop() {
               <div className="card-info">
                 <span className="kicker">Denim</span>
                 <h3>DIVA Jacket</h3>
-                <span className="from">$165</span>
+                <span className="from">Made to order</span>
               </div>
               <a href="#" className="card-link"></a>
             </div>
@@ -93,7 +93,7 @@ export default function Shop() {
               <div className="card-info">
                 <span className="kicker">Kids</span>
                 <h3>Unicorn Bow Set</h3>
-                <span className="from">$95</span>
+                <span className="from">Made to order</span>
               </div>
               <a href="#" className="card-link"></a>
             </div>

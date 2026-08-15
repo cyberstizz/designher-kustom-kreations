@@ -14,8 +14,13 @@ export default function init() {
   
       document.getElementById('sumSubtotal').textContent = currency(subtotal);
       document.getElementById('sumTotal').textContent = currency(total);
-      document.getElementById('cartBadge').textContent = items.length;
-      document.getElementById('cartBadge').style.display = items.length ? 'flex' : 'none';
+      // The header cart badge was removed when pricing came off the site.
+      // Guarded so this page keeps working if the badge ever returns.
+      var badge = document.getElementById('cartBadge');
+      if (badge) {
+        badge.textContent = items.length;
+        badge.hidden = items.length === 0;
+      }
   
       var shipRow = document.getElementById('shipRow');
       var shipNote = document.getElementById('shipNote');

@@ -23,6 +23,29 @@
     />
   </head>
   <body>
+    <!-- Netlify Forms detection stub.
+         Netlify scans the built HTML at deploy time to discover forms. A React
+         app renders its form in JavaScript, which the scanner never sees, so
+         this hidden static copy is what registers the form and its fields.
+         Every field the app submits must appear here, or Netlify drops it.
+         Do not delete this, and keep the field names in sync with
+         src/pages/scripts/custom.js. -->
+    <form name="custom-order" data-netlify="true" netlify-honeypot="bot-field" hidden>
+      <input type="text" name="bot-field" />
+      <input type="text" name="base" />
+      <input type="text" name="occasion" />
+      <input type="text" name="palette" />
+      <textarea name="personalization"></textarea>
+      <input type="text" name="size" />
+      <input type="text" name="timeline" />
+      <input type="text" name="budget" />
+      <input type="text" name="fullName" />
+      <input type="email" name="email" />
+      <input type="tel" name="phone" />
+      <input type="text" name="shipState" />
+      <input type="text" name="referencePhoto" />
+    </form>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

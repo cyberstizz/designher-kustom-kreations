@@ -197,3 +197,17 @@ nav.primary-nav a.active::after{width:100%;}
   *{animation-duration:.01ms !important;animation-iteration-count:1 !important;
     transition-duration:.01ms !important;scroll-behavior:auto !important;}
 }
+
+/* Header quote button — replaced the cart icon when pricing came off the site. */
+.header-icons .btn-quote{
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:10px 18px;border-radius:3px;
+  background:var(--ruby);color:var(--bone);
+  font-family:var(--font-body);font-size:13px;font-weight:600;
+  letter-spacing:.01em;white-space:nowrap;
+  transition:background .3s var(--ease), transform .3s var(--ease);
+}
+.header-icons .btn-quote:hover{background:var(--ruby-bright);transform:translateY(-1px);}
+@media (max-width:620px){
+  .header-icons .btn-quote{padding:9px 13px;font-size:12px;}
+}

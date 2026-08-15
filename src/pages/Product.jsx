@@ -94,8 +94,8 @@ export default function Product() {
               <a href="#reviews">4.9 · 36 reviews</a>
             </div>
             <div className="price-row">
-              <span className="price">$185</span>
-              <span className="price-note">Final sizing confirmed at checkout</span>
+              <span className="price">Made to order</span>
+              <span className="price-note">Dianna quotes each piece after you send the details</span>
             </div>
             <span className="one-of-one">One of one — once it's gone, it's gone</span>
             <p className="pdp-desc">
@@ -120,13 +120,13 @@ export default function Product() {
               <Link to="/custom">Start a Kreation</Link>
             </div>
             <div className="pdp-actions">
-              <button className="btn btn-dark" id="buyBtn">Buy Now</button>
-              <button className="btn btn-ghost" id="addBtn">
+              <Link className="btn btn-dark" to="/custom">Request This Piece</Link>
+              <a className="btn btn-ghost" href="mailto:designherinc@example.com?subject=Question%20about%20Sapphire%20Row%20Converse">
                 <svg width="15" height="15" viewBox="0 0 24 24">
                   <use href="#ic-bag" />
                 </svg>
-                Add to Bag
-              </button>
+                Ask a Question
+              </a>
             </div>
             <div className="trust-row">
               <div className="trust-item">
@@ -288,7 +288,7 @@ export default function Product() {
                 <div className="shelf-info">
                   <span className="kicker">Boots</span>
                   <h3>Diamond Girl Boots</h3>
-                  <span className="from">From $220</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </a>
@@ -297,7 +297,7 @@ export default function Product() {
                 <div className="shelf-info">
                   <span className="kicker">Denim</span>
                   <h3>Custom Jackets</h3>
-                  <span className="from">From $165</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </a>
@@ -306,7 +306,7 @@ export default function Product() {
                 <div className="shelf-info">
                   <span className="kicker">Kids</span>
                   <h3>Unicorn Bow Set</h3>
-                  <span className="from">From $95</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </a>

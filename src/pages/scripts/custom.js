@@ -127,13 +127,64 @@ export default function init() {
       btn.addEventListener('click', function(){ setStep(Number(btn.dataset.prev)); });
     });
   
-    document.getElementById('wizard').addEventListener('submit', function(e){
-      e.preventDefault();
-      if(!validateStep(4)) return;
+    // ---- Submit to Netlify Forms -------------------------------------
+    // Netlify intercepts a urlencoded POST to any path on the site when the
+    // body carries a form-name matching a form it detected at deploy time.
+    // The matching static form lives in index.html.
+    function showConfirmation(){
       document.getElementById('wizard').style.display = 'none';
       document.getElementById('tracker').style.display = 'none';
       document.getElementById('confirmPanel').classList.add('active');
       window.scrollTo({top: document.querySelector('.page-hero').offsetTop, behavior:'smooth'});
+    }
+
+    document.getElementById('wizard').addEventListener('submit', function(e){
+      e.preventDefault();
+      if(!validateStep(4)) return;
+
+      var submitBtn = document.querySelector('#wizard [type="submit"]');
+      var originalLabel = submitBtn ? submitBtn.textContent : '';
+      if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Sending\u2026'; }
+
+      var payload = {
+        'form-name': 'custom-order',
+        'bot-field': '',
+        base: state.base || '',
+        occasion: state.occasion || '',
+        palette: state.palette || '',
+        personalization: state.personalization || '',
+        size: state.size || '',
+        timeline: state.timeline || '',
+        budget: state.budget || '',
+        fullName: state.fullName || '',
+        email: state.email || '',
+        phone: state.phone || '',
+        shipState: state.shipState || '',
+        // Netlify Forms stores files only on multipart submissions. This sends
+        // the filename so Dianna knows to ask for the photo by reply.
+        referencePhoto: state.fileName ? (state.fileName + ' (ask customer to email this)') : 'none'
+      };
+
+      var body = Object.keys(payload).map(function(k){
+        return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k]);
+      }).join('&');
+
+      fetch('/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: body
+      }).then(function(res){
+        if(!res.ok) throw new Error('Submission failed: ' + res.status);
+        showConfirmation();
+      }).catch(function(err){
+        console.error(err);
+        if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
+        var errEl = document.getElementById('err4');
+        if(errEl){
+          errEl.textContent = "That didn't send. Check your connection and try again, or email designherinc@example.com directly.";
+          errEl.style.display = 'block';
+        }
+      });
     });
   
     document.querySelectorAll('.faq-q').forEach(function(q){

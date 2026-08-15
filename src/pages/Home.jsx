@@ -101,7 +101,7 @@ export default function Home() {
                 <div className="shelf-info">
                   <span className="kicker">Sneakers</span>
                   <h3>Bling Converse</h3>
-                  <span className="from">From $185</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </Link>
@@ -111,7 +111,7 @@ export default function Home() {
                 <div className="shelf-info">
                   <span className="kicker">Boots</span>
                   <h3>Diamond Girl Boots</h3>
-                  <span className="from">From $220</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </a>
@@ -121,7 +121,7 @@ export default function Home() {
                 <div className="shelf-info">
                   <span className="kicker">Denim</span>
                   <h3>Custom Jackets</h3>
-                  <span className="from">From $165</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </a>
@@ -131,7 +131,7 @@ export default function Home() {
                 <div className="shelf-info">
                   <span className="kicker">New Drop</span>
                   <h3>Bling Crocs</h3>
-                  <span className="from">From $140</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </a>

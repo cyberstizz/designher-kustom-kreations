@@ -93,7 +93,7 @@ export default function Cart() {
                 <div className="shelf-info">
                   <span className="kicker">Denim</span>
                   <h3>DIVA Jacket</h3>
-                  <span className="from">$165</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </Link>
@@ -102,7 +102,7 @@ export default function Cart() {
                 <div className="shelf-info">
                   <span className="kicker">Kids</span>
                   <h3>Unicorn Bow Set</h3>
-                  <span className="from">$95</span>
+                  <span className="from">Made to order</span>
                 </div>
                 <span className="shelf-link"></span>
               </Link>

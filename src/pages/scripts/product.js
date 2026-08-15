@@ -39,23 +39,10 @@ export default function init() {
       return true;
     }
   
-    document.getElementById('addBtn').addEventListener('click', function(){
-      if(!requireSize()) return;
-      this.classList.add('flash');
-      setTimeout(() => this.classList.remove('flash'), 500);
-      var count = document.getElementById('cartBadge');
-      if (count) {
-        count.textContent = String(Number(count.textContent || 0) + 1);
-        count.hidden = false;
-      }
-      showToast('Added to bag \u2014 size ' + selectedSize);
-    });
-  
-    document.getElementById('buyBtn').addEventListener('click', function(){
-      if(!requireSize()) return;
-      showToast('Taking you to secure checkout\u2026');
-    });
-  
+    // Add-to-bag and Buy-now were removed when pricing came off the site.
+    // Size selection still runs so the chosen size can be prefilled into the
+    // custom-order form later.
+
     // accordions
     document.querySelectorAll('#pdpAccordions .faq-q').forEach(function(q){
       q.addEventListener('click', function(){

@@ -250,6 +250,7 @@ export default function CustomKreation() {
               <div className="err">Enter your state.</div>
             </label>
             <div className="review-box" id="reviewBox"></div>
+            <div className="err" id="err4"></div>
             <div className="step-actions">
               <button type="button" className="btn btn-ghost back" data-prev="3">Back</button>
               <button type="submit" className="btn btn-primary">Request My Quote</button>

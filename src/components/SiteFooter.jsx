@@ -63,7 +63,6 @@ export default function SiteFooter({ variant = 'full' }) {
 
           <div className="footer-col">
             <h4>Info</h4>
-            <Link to="/order-status">Track an Order</Link>
             <Link to="/about">Shipping &amp; Turnaround</Link>
             <Link to="/about">Care Guide</Link>
           </div>
