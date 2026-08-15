@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom';
 import '../styles/pages/about.css';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import founderPick from '../../public/images/DiannaBeatyPic.JPG';
+
 
 export default function About() {
   return (
@@ -19,7 +21,7 @@ export default function About() {
       <div className="about-hero">
         <span className="eyebrow">
           <svg className="gem" viewBox="0 0 24 24">
-            <use href="#gem-shape" style={{color: 'var(--champagne)'}} />
+            <use href={founderPick} style={{color: 'var(--champagne)'}} />
           </svg>
           The Founder
         </span>
