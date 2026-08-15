@@ -4,7 +4,7 @@ import '../styles/pages/home.css';
 import init from './scripts/home.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
-import founderPick from '../../public/images/DiannaBeatyPic.JPG';
+import founderPick from '../../public/images/DiannaBeatyPic.jpg';
 
 export default function Home() {
   useEffect(() => init(), []);

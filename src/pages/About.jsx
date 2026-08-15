@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import '../styles/pages/about.css';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
-import founderPick from '../../public/images/DiannaBeatyPic.JPG';
+import founderPick from '../../public/images/DiannaBeatyPic.jpg';
 
 
 export default function About() {
