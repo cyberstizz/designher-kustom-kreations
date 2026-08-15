@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Single-page app: every URL must serve index.html so React Router can handle
+# it. Without this, loading /shop directly (or refreshing on it) 404s.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
