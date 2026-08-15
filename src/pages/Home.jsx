@@ -4,7 +4,6 @@ import '../styles/pages/home.css';
 import init from './scripts/home.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
-import founderPick from '../../public/images/DiannaBeatyPic.jpg';
 
 export default function Home() {
   useEffect(() => init(), []);
@@ -195,13 +194,13 @@ export default function Home() {
           <div className="wrap">
             <div className="about-grid">
               <div className="about-portrait reveal">
-                <span className="init">DB</span>
+                <img src="/images/DiannaBeatyPic.jpg" alt="Dianna Beaty, founder of Designher Custom Kreations" />
                 <span className="cap">Dianna Beaty — Founder, 2022</span>
               </div>
               <div className="about-copy reveal">
                 <span className="eyebrow">
                   <svg className="gem" viewBox="0 0 24 24">
-                    <use href={founderPick} style={{color: 'var(--ruby)'}} />
+                    <use href="#gem-shape" style={{color: 'var(--ruby)'}} />
                   </svg>
                   The Founder
                 </span>

@@ -19,22 +19,38 @@ export default function CustomKreation() {
           <polyline points="12,22 15.5,9" fill="none" stroke="currentColor" strokeWidth="1" />
         </symbol>
         <symbol id="ic-sneaker" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" strokeWidth="1.4" d="M3 16.5c0-1.6 1.4-2.4 2.7-3.1C7.5 12.4 9 10.8 9.6 9c.3-.9 1.4-1 1.9-.3.7 1 2 2.6 4 3.6 2 1 5.5 1 7 1.4.9.2 1.5 1 1.5 1.9V17c0 1-.8 1.5-1.7 1.5H4.5C3.7 18.5 3 17.9 3 17v-.5Z" />
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round"
+        d="M2.9 16.2c.1-2.1 2-3.1 4.1-3.8l4.4-1.5V6.6c0-.7.6-1.3 1.3-1.3h4.1c.7 0 1.3.6 1.3 1.3v5.1c0 .9.4 1.7 1.2 2.1.9.5 1.4 1.3 1.4 2.2v.2z"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"
+        d="M2.4 16.2h19.2v1.1c0 .9-.7 1.6-1.6 1.6H4c-.9 0-1.6-.7-1.6-1.6z"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.05" strokeLinecap="round"
+        d="M11.4 8.4h6.3M11.4 10.8h6.3"/>
         </symbol>
         <symbol id="ic-boot" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" strokeWidth="1.4" d="M8 3h5v8.5c0 1 .5 1.6 1.4 2.1l5 2.6c.9.5 1.6 1.3 1.6 2.4v1.9c0 1-.8 1.5-1.7 1.5H5.5c-.9 0-1.5-.6-1.5-1.5v-4c0-.7.3-1.3.8-1.8L8 11.2V3Z" />
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"
+        d="M7 3.8h5v7.6c0 1 .5 1.8 1.4 2.2l4.4 2.3c1.1.6 1.8 1.6 1.8 2.8v.3c0 .6-.5 1-1 1H7c-.6 0-1-.5-1-1V3.8z"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" d="M6 6.6h6"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" d="M6 17.2h13.5"/>
         </symbol>
         <symbol id="ic-jacket" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" strokeWidth="1.4" d="M9 3 6 5 3 8l2.5 2.5L7 9v11h10V9l1.5 1.5L21 8l-3-3-3-2-1.5 2h-3L9 3Z" />
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"
+        d="M9.4 3.6 6 5.1 3.2 7.9l2.3 2.5 1.6-1.4v10.5c0 .5.4.9.9.9h8c.5 0 .9-.4.9-.9V9l1.6 1.4 2.3-2.5-2.8-2.8-3.4-1.5L12 6.4z"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" d="M12 6.4v13"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinejoin="round" d="M9.4 3.6 12 6.4l2.6-2.8"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round" d="M7.1 16.2h9.8"/>
         </symbol>
         <symbol id="ic-crocs" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" strokeWidth="1.4" d="M3 14c0-3 2.5-6 9-6s9 3 9 6c0 2.2-1.8 4-4.2 4H7.2C4.8 18 3 16.2 3 14Z" />
-          <circle cx="8" cy="12.6" r=".9" fill="currentColor" stroke="none" />
-          <circle cx="12" cy="11.6" r=".9" fill="currentColor" stroke="none" />
-          <circle cx="16" cy="12.6" r=".9" fill="currentColor" stroke="none" />
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round"
+        d="M2.7 15.9v-2.3C2.7 10.9 4.3 9.1 6.6 9.1c2.5 0 4.4 1.2 6 3.1l3 3.7z"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"
+        d="M2.3 15.9h14.4v1.2c0 .9-.7 1.6-1.6 1.6H3.9c-.9 0-1.6-.7-1.6-1.6z"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"
+        d="M15.6 11.9c2.9.5 4.3 2.3 4.1 5.3"/>
+        <path fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round"
+        d="M5.6 12.5v.9M8.2 11.6v.9M10.8 12.2v.9"/>
         </symbol>
         <symbol id="ic-plus" viewBox="0 0 24 24">
-          <path fill="none" stroke="currentColor" strokeWidth="1.4" d="M12 5v14M5 12h14" />
+        <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" d="M12 5v14M5 12h14"/>
         </symbol>
         <symbol id="ic-upload" viewBox="0 0 24 24">
           <path fill="none" stroke="currentColor" strokeWidth="1.4" d="M12 15V4M7 9l5-5 5 5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
