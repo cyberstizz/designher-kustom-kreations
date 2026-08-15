@@ -9,4 +9,8 @@ import './styles/global.css';
    inside useEffect. StrictMode intentionally double-invokes effects in dev,
    which would attach every listener twice. Once those pages are rewritten as
    real React state (see README), turn StrictMode back on. */
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
