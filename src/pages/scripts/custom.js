@@ -181,7 +181,7 @@ export default function init() {
         if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
         var errEl = document.getElementById('err4');
         if(errEl){
-          errEl.textContent = "That didn't send. Check your connection and try again, or email designherinc@example.com directly.";
+          errEl.textContent = "That didn't send. Check your connection and try again, or email diannabeaty65@gmail.com directly.";
           errEl.style.display = 'block';
         }
       });

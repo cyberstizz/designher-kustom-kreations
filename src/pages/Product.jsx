@@ -121,7 +121,7 @@ export default function Product() {
             </div>
             <div className="pdp-actions">
               <Link className="btn btn-dark" to="/custom">Request This Piece</Link>
-              <a className="btn btn-ghost" href="mailto:designherinc@example.com?subject=Question%20about%20Sapphire%20Row%20Converse">
+              <a className="btn btn-ghost" href="mailto:diannabeaty65@gmail.com?subject=Question%20about%20Sapphire%20Row%20Converse">
                 <svg width="15" height="15" viewBox="0 0 24 24">
                   <use href="#ic-bag" />
                 </svg>
