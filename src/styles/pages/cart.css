@@ -27,7 +27,7 @@
 .page-cart .ci-price {font-family:var(--font-mono);font-weight:700;font-size:15px;text-align:right;white-space:nowrap;}
 .page-cart .empty-state {display:none;text-align:center;padding:60px 0;}
 .page-cart .empty-state.show {display:block;}
-.page-cart .empty-state svg {width:40px;height:40px;color:rgba(246,239,228,0.3);margin:0 auto 18px;}
+.page-cart .empty-state svg {display:block;width:40px;height:40px;color:rgba(246,239,228,0.3);margin:0 auto 18px;}
 .page-cart .empty-state h2 {font-family:var(--font-display);font-weight:500;font-size:24px;margin:0 0 10px;}
 .page-cart .empty-state p {font-size:14px;color:rgba(246,239,228,0.55);margin:0 0 26px;}
 .page-cart .summary {
