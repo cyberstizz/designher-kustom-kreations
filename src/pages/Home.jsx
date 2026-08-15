@@ -4,6 +4,7 @@ import '../styles/pages/home.css';
 import init from './scripts/home.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import founderPick from '../../public/images/DiannaBeatyPic.JPG';
 
 export default function Home() {
   useEffect(() => init(), []);
@@ -200,7 +201,7 @@ export default function Home() {
               <div className="about-copy reveal">
                 <span className="eyebrow">
                   <svg className="gem" viewBox="0 0 24 24">
-                    <use href="#gem-shape" style={{color: 'var(--ruby)'}} />
+                    <use href={founderPick} style={{color: 'var(--ruby)'}} />
                   </svg>
                   The Founder
                 </span>
