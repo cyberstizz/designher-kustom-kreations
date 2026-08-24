@@ -293,3 +293,15 @@
   .page-admin .product-row{grid-template-columns:auto auto 1fr;}
   .page-admin .row-actions{grid-column:1 / -1;justify-content:flex-start;}
 }
+
+/* Customer reference photo. Private bucket, so this renders a signed link. */
+.page-admin .photo-cell{grid-column:1 / -1;}
+.page-admin .ref-photo{display:inline-flex;flex-direction:column;gap:7px;}
+.page-admin .ref-photo img{
+  max-width:220px;max-height:260px;border-radius:5px;
+  border:1px solid var(--ink-line);display:block;
+}
+.page-admin .ref-photo span{
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--champagne-soft);
+}
