@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase, isSupabaseConfigured, signedPhotoUrl } from '../lib/supabase.js';
 import ProductsPanel from './ProductsPanel.jsx';
+import SitePanel from './SitePanel.jsx';
 import '../styles/pages/admin.css';
 
 const STATUSES = ['new', 'quoted', 'in progress', 'shipped', 'closed'];
@@ -368,6 +369,12 @@ export default function Admin() {
         >
           Pieces
         </button>
+        <button
+          className={tab === 'site' ? 'active' : ''}
+          onClick={() => setTab('site')}
+        >
+          Photos
+        </button>
       </nav>
 
       <main className="admin-main">
@@ -380,14 +387,23 @@ export default function Admin() {
             </p>
             <Inquiries />
           </>
-        ) : (
+        ) : tab === 'products' ? (
           <>
             <h1>Your pieces</h1>
             <p className="admin-lede">
               Everything on the Shop page. Add a piece, change its photos or wording,
-              and drag the order with the arrows.
+              and reorder with the arrows.
             </p>
             <ProductsPanel />
+          </>
+        ) : (
+          <>
+            <h1>Website photos</h1>
+            <p className="admin-lede">
+              The pictures that aren't pieces — the big photo on the home page and
+              your own portrait.
+            </p>
+            <SitePanel />
           </>
         )}
       </main>
