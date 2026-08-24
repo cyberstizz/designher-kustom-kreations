@@ -473,7 +473,6 @@
 @media (max-width:980px) {
 .page-home .hero {grid-template-columns:1fr;padding-top:56px;}
 .page-home .hero-media {order:-1;aspect-ratio:16/11;}
-.page-home nav.primary-nav {display:none;}
 .page-home .shelf {grid-template-columns:repeat(2,1fr);}
 .page-home .about-grid {grid-template-columns:1fr;gap:40px;}
 .page-home .process {grid-template-columns:1fr;gap:48px;}
@@ -501,3 +500,12 @@
   background:linear-gradient(to top,rgba(21,15,26,.85) 0%,rgba(21,15,26,.25) 38%,transparent 65%);
 }
 .page-home .about-portrait .cap{z-index:2;}
+
+/* Shown on the shelf before Dianna has published anything. */
+.page-home .shelf-empty{
+  grid-column:1 / -1;padding:60px 24px;text-align:center;
+  border:1px dashed var(--ink-line);border-radius:6px;
+}
+.page-home .shelf-empty p{
+  margin:0 0 20px;font-size:15.5px;color:rgba(246,239,228,0.6);
+}

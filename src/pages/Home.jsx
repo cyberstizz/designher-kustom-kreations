@@ -1,12 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/pages/home.css';
 import init from './scripts/home.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import { categoryLabel, fetchPublishedProducts } from '../lib/products.js';
 
 export default function Home() {
   useEffect(() => init(), []);
+
+  // The shelf shows the first four published pieces, in the order Dianna set
+  // in the admin. The container is already a .reveal element observed at
+  // mount, so loading these late doesn't break the entrance animation.
+  const [shelf, setShelf] = useState([]);
+  useEffect(() => {
+    let cancelled = false;
+    fetchPublishedProducts().then((res) => {
+      if (!cancelled && !res.error) setShelf(res.data.slice(0, 4));
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   return (
     <div className="page-home">
@@ -95,46 +108,29 @@ export default function Home() {
           </div>
           <div className="wrap" style={{padding: '0', maxWidth: '1240px'}}>
             <div className="shelf reveal">
-              <Link to="/product" className="shelf-card">
-                <img src="/images/kreation-01.jpg" alt="Rhinestone Converse sneakers" />
-                <div className="shelf-sweep"></div>
-                <div className="shelf-info">
-                  <span className="kicker">Sneakers</span>
-                  <h3>Bling Converse</h3>
-                  <span className="from">Made to order</span>
+              {shelf.length > 0 ? (
+                shelf.map((p) => (
+                  <Link key={p.id} to={`/product/${p.slug}`} className="shelf-card">
+                    {p.image_url ? (
+                      <img src={p.image_url} alt={p.title} loading="lazy" />
+                    ) : (
+                      <div className="swatch"></div>
+                    )}
+                    <div className="shelf-sweep"></div>
+                    <div className="shelf-info">
+                      <span className="kicker">{categoryLabel(p.category)}</span>
+                      <h3>{p.title}</h3>
+                      <span className="from">{p.blurb || 'Made to order'}</span>
+                    </div>
+                    <span className="shelf-link"></span>
+                  </Link>
+                ))
+              ) : (
+                <div className="shelf-empty">
+                  <p>New pieces are being photographed right now.</p>
+                  <Link className="btn btn-primary" to="/custom">Start a Kreation</Link>
                 </div>
-                <span className="shelf-link"></span>
-              </Link>
-              <a href="#" className="shelf-card">
-                <img src="/images/kreation-02.jpg" alt="Rhinestone Uggs boots with matching bling cap" />
-                <div className="shelf-sweep"></div>
-                <div className="shelf-info">
-                  <span className="kicker">Boots</span>
-                  <h3>Diamond Girl Boots</h3>
-                  <span className="from">Made to order</span>
-                </div>
-                <span className="shelf-link"></span>
-              </a>
-              <a href="#" className="shelf-card">
-                <img src="/images/kreation-03.jpg" alt="Custom denim jacket with chenille lettering and graphic patch" />
-                <div className="shelf-sweep"></div>
-                <div className="shelf-info">
-                  <span className="kicker">Denim</span>
-                  <h3>Custom Jackets</h3>
-                  <span className="from">Made to order</span>
-                </div>
-                <span className="shelf-link"></span>
-              </a>
-              <a href="#" className="shelf-card">
-                <div className="swatch"></div>
-                <div className="shelf-sweep"></div>
-                <div className="shelf-info">
-                  <span className="kicker">New Drop</span>
-                  <h3>Bling Crocs</h3>
-                  <span className="from">Made to order</span>
-                </div>
-                <span className="shelf-link"></span>
-              </a>
+              )}
             </div>
           </div>
         </section>
