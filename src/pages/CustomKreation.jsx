@@ -49,6 +49,11 @@ export default function CustomKreation() {
         <path fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round"
         d="M5.6 12.5v.9M8.2 11.6v.9M10.8 12.2v.9"/>
         </symbol>
+        <symbol id="ic-hat" viewBox="0 0 24 24">
+          <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" d="M4.6 15.6v-1.4a6.9 6.9 0 0 1 13.8 0v1.4z" />
+          <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" strokeLinecap="round" d="M4.6 15.6h13.8c3 .1 4.8 1.1 4.8 2.3H4.6z" />
+          <path fill="none" stroke="currentColor" strokeWidth="1.05" strokeLinecap="round" d="M11.5 8.9v6.7" />
+        </symbol>
         <symbol id="ic-plus" viewBox="0 0 24 24">
         <path fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" d="M12 5v14M5 12h14"/>
         </symbol>
@@ -124,6 +129,12 @@ export default function CustomKreation() {
                   <use href="#ic-crocs" />
                 </svg>
                 <span>Crocs</span>
+              </div>
+              <div className="option-card" data-value="Hat">
+                <svg className="oc-icon" viewBox="0 0 24 24">
+                  <use href="#ic-hat" />
+                </svg>
+                <span>Hat</span>
               </div>
               <div className="option-card" data-value="Other">
                 <svg className="oc-icon" viewBox="0 0 24 24">

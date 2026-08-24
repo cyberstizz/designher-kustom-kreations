@@ -29,6 +29,7 @@ export const CATEGORIES = [
   { id: 'boots', label: 'Boots' },
   { id: 'jackets', label: 'Jackets' },
   { id: 'crocs', label: 'Crocs' },
+  { id: 'hats', label: 'Hats' },
   { id: 'kids', label: 'Kids' },
 ];
 

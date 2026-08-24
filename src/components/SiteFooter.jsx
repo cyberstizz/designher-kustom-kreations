@@ -51,6 +51,7 @@ export default function SiteFooter({ variant = 'full' }) {
             <Link to="/shop?category=boots">Boots</Link>
             <Link to="/shop?category=jackets">Jackets</Link>
             <Link to="/shop?category=crocs">Crocs</Link>
+            <Link to="/shop?category=hats">Hats</Link>
           </div>
 
           <div className="footer-col">
