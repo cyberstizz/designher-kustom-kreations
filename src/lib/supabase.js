@@ -26,7 +26,7 @@ if (!isSupabaseConfigured && import.meta.env.DEV) {
 
 export const supabase = isSupabaseConfigured ? createClient(url, anonKey) : null;
 
-const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+const MAX_PHOTO_BYTES = 25 * 1024 * 1024; // backstop; photos are resized first
 const ALLOWED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 
 /**
@@ -43,17 +43,23 @@ export async function uploadReferencePhoto(file) {
   if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
     return { path: null, error: new Error('Please attach a photo (JPG, PNG, WEBP or HEIC).') };
   }
-  if (file.size > MAX_PHOTO_BYTES) {
-    return { path: null, error: new Error('That photo is over 10MB. Please attach a smaller one.') };
+  const { compressImage } = await import('./image.js');
+  const prepared = await compressImage(file);
+
+  if (prepared.size > MAX_PHOTO_BYTES) {
+    return {
+      path: null,
+      error: new Error("That photo is unusually large and couldn't be resized. Try emailing it instead."),
+    };
   }
 
   const now = new Date();
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-60);
+  const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-60);
   const path = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${Date.now()}-${safeName}`;
 
   const { error } = await supabase.storage
     .from('inquiry-photos')
-    .upload(path, file, { cacheControl: '3600', upsert: false });
+    .upload(path, prepared, { cacheControl: '3600', upsert: false });
 
   return error ? { path: null, error } : { path, error: null };
 }

@@ -67,12 +67,8 @@ export default function init() {
         e.target.value = '';
         return;
       }
-      if(f.size > 10 * 1024 * 1024){
-        state.file = null; state.fileName = '';
-        label.textContent = 'That photo is over 10MB. Please pick a smaller one.';
-        e.target.value = '';
-        return;
-      }
+      // No size check here on purpose: the photo is resized in the browser
+      // at submit time, so a big camera file is fine.
 
       state.file = f;
       state.fileName = f.name;

@@ -51,7 +51,7 @@ export async function saveSetting(key, value) {
   return { error };
 }
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 25 * 1024 * 1024; // backstop; photos are resized first
 
 /** Upload a site image (hero, portrait) to the public product-images bucket. */
 export async function uploadSiteImage(file) {
@@ -59,15 +59,22 @@ export async function uploadSiteImage(file) {
   if (!file.type.startsWith('image/')) {
     return { url: null, error: new Error('That file is not an image.') };
   }
-  if (file.size > MAX_BYTES) {
-    return { url: null, error: new Error('That photo is larger than 8MB. Try a smaller one.') };
+  const { compressImage } = await import('./image.js');
+  const prepared = await compressImage(file, { maxDimension: 2400 });
+
+  if (prepared.size > MAX_BYTES) {
+    return {
+      url: null,
+      error: new Error("That photo is unusually large and couldn't be resized. Try saving it as a JPG first."),
+    };
   }
+
   const supabase = await sdk();
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-60);
+  const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(-60);
   const path = `site/${Date.now()}-${safeName}`;
   const { error } = await supabase.storage
     .from('product-images')
-    .upload(path, file, { cacheControl: '31536000', upsert: false });
+    .upload(path, prepared, { cacheControl: '31536000', upsert: false });
   if (error) return { url: null, error };
   const { data } = supabase.storage.from('product-images').getPublicUrl(path);
   return { url: data.publicUrl, error: null };

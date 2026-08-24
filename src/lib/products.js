@@ -134,7 +134,10 @@ export async function saveOrder(products) {
 
 /* ----------------------------------------------------------------- storage */
 
-const MAX_UPLOAD_BYTES = 8 * 1024 * 1024;
+// Ceiling on what actually reaches storage. Photos are resized in the
+// browser first, so a 30MB camera file lands here at well under 1MB and
+// this limit is only a backstop for something that couldn't be resized.
+const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 /**
  * Upload one photo to the product-images bucket and return its public URL.
@@ -146,17 +149,24 @@ export async function uploadProductImage(file, slug) {
   if (!file.type.startsWith('image/')) {
     return { url: null, error: new Error('That file is not an image.') };
   }
-  if (file.size > MAX_UPLOAD_BYTES) {
-    return { url: null, error: new Error('That photo is larger than 8MB. Try a smaller one.') };
+
+  const { compressImage } = await import('./image.js');
+  const prepared = await compressImage(file);
+
+  if (prepared.size > MAX_UPLOAD_BYTES) {
+    return {
+      url: null,
+      error: new Error("That photo is unusually large and couldn't be resized. Try saving it as a JPG first."),
+    };
   }
 
   const supabase = await sdk();
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+  const safeName = prepared.name.replace(/[^a-zA-Z0-9._-]/g, '-');
   const path = `${slug || 'unsorted'}/${Date.now()}-${safeName}`;
 
   const { error } = await supabase.storage
     .from('product-images')
-    .upload(path, file, { cacheControl: '31536000', upsert: false });
+    .upload(path, prepared, { cacheControl: '31536000', upsert: false });
   if (error) return { url: null, error };
 
   const { data } = supabase.storage.from('product-images').getPublicUrl(path);
