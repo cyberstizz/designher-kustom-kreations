@@ -1,16 +1,49 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import '../styles/pages/shop.css';
-import init from './scripts/shop.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import { CATEGORIES, categoryLabel, fetchPublishedProducts } from '../lib/products.js';
+
+const FILTERS = [{ id: 'all', label: 'All' }, ...CATEGORIES];
 
 export default function Shop() {
-  useEffect(() => init(), []);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [unconfigured, setUnconfigured] = useState(false);
+  const [error, setError] = useState('');
+  const [params, setParams] = useSearchParams();
+
+  // The category lives in the URL so /shop?category=boots is shareable and the
+  // browser back button behaves the way people expect.
+  const active = params.get('category') || 'all';
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const res = await fetchPublishedProducts();
+      if (cancelled) return;
+      if (res.unconfigured) setUnconfigured(true);
+      else if (res.error) setError(res.error.message);
+      else setProducts(res.data);
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const shown = useMemo(
+    () => (active === 'all' ? products : products.filter((p) => p.category === active)),
+    [products, active]
+  );
+
+  function setCategory(id) {
+    if (id === 'all') setParams({}, { replace: true });
+    else setParams({ category: id }, { replace: true });
+  }
 
   return (
     <div className="page-shop">
-      <svg width="0" height="0" style={{position: 'absolute'}}>
+      <svg width="0" height="0" style={{ position: 'absolute' }}>
         <symbol id="gem-shape" viewBox="0 0 24 24">
           <polygon points="12,2 20,9 12,22 4,9" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
           <polyline points="4,9 20,9" fill="none" stroke="currentColor" strokeWidth="1.1" />
@@ -19,142 +52,93 @@ export default function Shop() {
           <polyline points="12,22 15.5,9" fill="none" stroke="currentColor" strokeWidth="1" />
         </symbol>
       </svg>
+
       <SiteHeader />
+
       <div className="page-hero">
         <span className="eyebrow">
           <svg className="gem" viewBox="0 0 24 24">
-            <use href="#gem-shape" style={{color: 'var(--champagne)'}} />
+            <use href="#gem-shape" style={{ color: 'var(--champagne)' }} />
           </svg>
           The Collection
         </span>
         <h1>Shop the kreations</h1>
         <p>
-          Ready-made, hand-set pieces you can buy today. Want your own colors, initials, or a piece built from scratch?
-          <Link to="/custom" style={{textDecoration: 'underline', textUnderlineOffset: '3px'}}>Start a Kreation</Link>
+          Hand-set pieces, made to order. Want your own colors, initials, or a piece
+          built from scratch?{' '}
+          <Link to="/custom" style={{ textDecoration: 'underline', textUnderlineOffset: '3px' }}>
+            Start a Kreation
+          </Link>{' '}
           instead.
         </p>
       </div>
+
       <div className="filter-bar">
         <div className="filter-inner">
           <div className="pill-row" id="pillRow">
-            <div className="pill active" data-cat="all">All</div>
-            <div className="pill" data-cat="sneakers">Sneakers</div>
-            <div className="pill" data-cat="boots">Boots</div>
-            <div className="pill" data-cat="jackets">Jackets</div>
-            <div className="pill" data-cat="crocs">Crocs</div>
-            <div className="pill" data-cat="kids">Kids</div>
+            {FILTERS.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                className={`pill${active === f.id ? ' active' : ''}`}
+                aria-pressed={active === f.id}
+                onClick={() => setCategory(f.id)}
+              >
+                {f.label}
+              </button>
+            ))}
           </div>
           <div className="filter-right">
-            <span className="result-count" id="resultCount">6 kreations</span>
-            <select id="sortSelect">
-              <option value="featured">Featured</option>
-              <option value="low">Price: Low to High</option>
-              <option value="high">Price: High to Low</option>
-            </select>
+            <span className="result-count" id="resultCount">
+              {loading ? '\u2026' : `${shown.length} ${shown.length === 1 ? 'kreation' : 'kreations'}`}
+            </span>
           </div>
         </div>
       </div>
+
       <div className="shop-grid-wrap">
-        <div className="wrap" style={{padding: '0', maxWidth: '1240px'}}>
-          <div className="shop-grid" id="shopGrid">
-            <Link to="/product" className="product-card" data-cat="sneakers" data-price="185">
-              <img src="/images/kreation-01.jpg" alt="Sapphire Row hand-set Converse sneakers" />
-              <div className="card-sweep"></div>
-              <div className="card-info">
-                <span className="kicker">Sneakers</span>
-                <h3>Sapphire Row Converse</h3>
-                <span className="from">Made to order</span>
-              </div>
-              <span className="card-link"></span>
-            </Link>
-            <div className="product-card" data-cat="boots" data-price="220">
-              <img src="/images/kreation-02.jpg" alt="Diamond Girl rhinestone boots and cap" />
-              <div className="card-sweep"></div>
-              <div className="card-info">
-                <span className="kicker">Boots</span>
-                <h3>Diamond Girl Boots</h3>
-                <span className="from">Made to order</span>
-              </div>
-              <a href="#" className="card-link"></a>
+        <div className="wrap" style={{ padding: '0', maxWidth: '1240px' }}>
+          {loading ? (
+            <p className="shop-message">Loading the collection\u2026</p>
+          ) : unconfigured ? (
+            <p className="shop-message">
+              The catalog isn't connected yet. Add your Supabase keys to{' '}
+              <code>.env.local</code> and restart the dev server.
+            </p>
+          ) : error ? (
+            <p className="shop-message">Couldn't load the collection. Please refresh.</p>
+          ) : shown.length === 0 ? (
+            <div className="shop-message">
+              <p>
+                {products.length === 0
+                  ? 'New pieces are being photographed right now.'
+                  : `Nothing in ${categoryLabel(active)} yet.`}
+              </p>
+              <Link className="btn btn-primary" to="/custom">Start a Kreation instead</Link>
             </div>
-            <div className="product-card" data-cat="jackets" data-price="165">
-              <img src="/images/kreation-03.jpg" alt="DIVA custom denim jacket" />
-              <div className="card-sweep"></div>
-              <div className="card-info">
-                <span className="kicker">Denim</span>
-                <h3>DIVA Jacket</h3>
-                <span className="from">Made to order</span>
-              </div>
-              <a href="#" className="card-link"></a>
+          ) : (
+            <div className="shop-grid" id="shopGrid">
+              {shown.map((p) => (
+                <Link key={p.id} to={`/product/${p.slug}`} className="product-card" data-cat={p.category}>
+                  {p.image_url ? (
+                    <img src={p.image_url} alt={p.title} loading="lazy" />
+                  ) : (
+                    <div className="swatch" />
+                  )}
+                  <div className="card-sweep"></div>
+                  <div className="card-info">
+                    <span className="kicker">{categoryLabel(p.category)}</span>
+                    <h3>{p.title}</h3>
+                    <span className="from">{p.blurb || 'Made to order'}</span>
+                  </div>
+                  <span className="card-link"></span>
+                </Link>
+              ))}
             </div>
-            <div className="product-card" data-cat="kids" data-price="95">
-              <img src="/images/kreation-04.jpg" alt="Kids sequin unicorn bow sneaker" />
-              <div className="card-sweep"></div>
-              <div className="card-info">
-                <span className="kicker">Kids</span>
-                <h3>Unicorn Bow Set</h3>
-                <span className="from">Made to order</span>
-              </div>
-              <a href="#" className="card-link"></a>
-            </div>
-            <div className="product-card" data-cat="sneakers" data-price="9999" style={{'--swatch-a': '#3A1730', '--swatch-b': '#160A17'}}>
-              <div className="swatch"></div>
-              <div className="card-sweep"></div>
-              <span className="soon-badge">New Design Weekly</span>
-              <div className="card-info">
-                <span className="kicker">Sneakers</span>
-                <h3>More Styles Coming</h3>
-                <span className="from">Check back soon</span>
-              </div>
-              <Link to="/custom" className="card-link"></Link>
-            </div>
-            <div className="product-card" data-cat="crocs" data-price="9999" style={{'--swatch-a': '#5C4A12', '--swatch-b': '#241D08'}}>
-              <div className="swatch"></div>
-              <div className="card-sweep"></div>
-              <span className="soon-badge">New Drop</span>
-              <div className="card-info">
-                <span className="kicker">Crocs</span>
-                <h3>Bling Crocs</h3>
-                <span className="from">Coming soon</span>
-              </div>
-              <Link to="/custom" className="card-link"></Link>
-            </div>
-            <div className="product-card" data-cat="crocs" data-price="9999" style={{'--swatch-a': '#123A2E', '--swatch-b': '#081714'}}>
-              <div className="swatch"></div>
-              <div className="card-sweep"></div>
-              <span className="soon-badge">New Drop</span>
-              <div className="card-info">
-                <span className="kicker">Crocs</span>
-                <h3>Bling Crocs, Vol. 2</h3>
-                <span className="from">Coming soon</span>
-              </div>
-              <Link to="/custom" className="card-link"></Link>
-            </div>
-            <div className="product-card" data-cat="jackets" data-price="9999" style={{'--swatch-a': '#1A2A4A', '--swatch-b': '#0A0F1E'}}>
-              <div className="swatch"></div>
-              <div className="card-sweep"></div>
-              <span className="soon-badge">New Design Weekly</span>
-              <div className="card-info">
-                <span className="kicker">Denim</span>
-                <h3>More Styles Coming</h3>
-                <span className="from">Check back soon</span>
-              </div>
-              <Link to="/custom" className="card-link"></Link>
-            </div>
-            <div className="product-card" data-cat="boots" data-price="9999" style={{'--swatch-a': '#3A1212', '--swatch-b': '#170707'}}>
-              <div className="swatch"></div>
-              <div className="card-sweep"></div>
-              <span className="soon-badge">New Design Weekly</span>
-              <div className="card-info">
-                <span className="kicker">Boots</span>
-                <h3>More Styles Coming</h3>
-                <span className="from">Check back soon</span>
-              </div>
-              <Link to="/custom" className="card-link"></Link>
-            </div>
-          </div>
+          )}
         </div>
       </div>
+
       <SiteFooter />
     </div>
   );

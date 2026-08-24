@@ -1,13 +1,32 @@
-import { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import '../styles/pages/product.css';
-import init from './scripts/product.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import { CONTACT_EMAIL } from '../lib/site.js';
+import {
+  categoryLabel,
+  fetchProductBySlug,
+  fetchPublishedProducts,
+  galleryFor,
+} from '../lib/products.js';
 
-export default function Product() {
-  useEffect(() => init(), []);
+const FAQS = [
+  {
+    q: 'Details & Care',
+    a: 'Spot clean only with a dry or barely damp cloth. Stones are hand-set with a flexible jewelry-grade adhesive built for daily wear, not full water submersion.',
+  },
+  {
+    q: 'Shipping & Turnaround',
+    a: 'Every piece is made to order, hand-set one stone at a time, and ships nationwide in about 14 days. Dianna confirms the timeline with you before starting.',
+  },
+  {
+    q: 'Sizing',
+    a: "Bring your own item or have Dianna source it. Either way she confirms sizing with you in writing before a single stone goes on \u2014 nothing is guessed.",
+  },
+];
 
+function Shell({ children }) {
   return (
     <div className="page-product">
       <svg width="0" height="0" style={{position: 'absolute'}}>
@@ -47,280 +66,216 @@ export default function Product() {
           <path d="M4 17l5-5 4 4 3-3 4 4" fill="none" stroke="currentColor" strokeWidth="1.2" />
         </symbol>
       </svg>
-      <SiteHeader cartCount={1} />
-      <div className="breadcrumb">
+      <SiteHeader />
+      <main>{children}</main>
+      <SiteFooter variant="slim" />
+    </div>
+  );
+}
+
+export default function Product() {
+  const { slug } = useParams();
+  const [product, setProduct] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [status, setStatus] = useState('loading'); // loading | ready | missing | unconfigured
+  const [mainImage, setMainImage] = useState(null);
+  const [openFaq, setOpenFaq] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setStatus('loading');
+
+    (async () => {
+      if (!slug) {
+        if (!cancelled) setStatus('missing');
+        return;
+      }
+      const res = await fetchProductBySlug(slug);
+      if (cancelled) return;
+
+      if (res.unconfigured) return setStatus('unconfigured');
+      if (res.error || !res.data) return setStatus('missing');
+
+      setProduct(res.data);
+      setMainImage(galleryFor(res.data)[0] || null);
+      setStatus('ready');
+
+      const all = await fetchPublishedProducts();
+      if (cancelled || all.error) return;
+      setRelated(
+        all.data.filter((p) => p.slug !== res.data.slug && p.category === res.data.category).slice(0, 3)
+      );
+    })();
+
+    return () => { cancelled = true; };
+  }, [slug]);
+
+  if (status === 'loading') {
+    return <Shell><p className="pdp-message">Loading\u2026</p></Shell>;
+  }
+
+  if (status === 'unconfigured') {
+    return (
+      <Shell>
+        <p className="pdp-message">
+          The catalog isn't connected yet. Add your Supabase keys to <code>.env.local</code>.
+        </p>
+      </Shell>
+    );
+  }
+
+  if (status === 'missing') {
+    return (
+      <Shell>
+        <div className="pdp-message">
+          <h1>That piece isn't here.</h1>
+          <p>It may have sold or been renamed. Everything currently available is in the shop.</p>
+          <Link className="btn btn-dark" to="/shop">Browse the collection</Link>
+        </div>
+      </Shell>
+    );
+  }
+
+  const gallery = galleryFor(product);
+
+  return (
+    <Shell>
+      <nav className="crumbs">
         <Link to="/">Home</Link>
-        /
-        <Link to="/shop">Sneakers</Link>
-        /  Sapphire Row
-      </div>
-      <main>
-        <div className="pdp">
-          <div className="gallery">
+        <span>/</span>
+        <Link to="/shop">Shop</Link>
+        <span>/</span>
+        <Link to={`/shop?category=${product.category}`}>{categoryLabel(product.category)}</Link>
+      </nav>
+
+      <div className="pdp-wrap">
+        <div className="pdp-grid">
+          <div className="pdp-gallery">
             <div className="gallery-main">
-              <img id="mainImg" src="/images/kreation-01.jpg" alt="'Sapphire Row' hand-set Converse, back view" />
+              {mainImage ? (
+                <img id="mainImg" src={mainImage} alt={product.title} />
+              ) : (
+                <div className="swatch" />
+              )}
               <div className="gallery-sweep"></div>
               <span className="gallery-badge">One of One</span>
             </div>
-            <div className="gallery-thumbs">
-              <div className="thumb active" data-src="/images/kreation-01.jpg">
-                <img src="/images/kreation-01.jpg" alt="Full pair, back view" />
+
+            {gallery.length > 1 && (
+              <div className="gallery-thumbs">
+                {gallery.map((src) => (
+                  <button
+                    key={src}
+                    type="button"
+                    className={`thumb${src === mainImage ? ' active' : ''}`}
+                    onClick={() => setMainImage(src)}
+                    aria-label="Show this photo"
+                  >
+                    <img src={src} alt="" loading="lazy" />
+                  </button>
+                ))}
               </div>
-              <div className="thumb" data-src="/images/kreation-05.jpg">
-                <img src="/images/kreation-05.jpg" alt="Close-up of hand-set crystal and pearl detail" />
-              </div>
-              <div className="thumb placeholder" title="Add more angles in production">
-                <svg viewBox="0 0 24 24">
-                  <use href="#ic-img" />
-                </svg>
-              </div>
-              <div className="thumb placeholder" title="Add more angles in production">
-                <svg viewBox="0 0 24 24">
-                  <use href="#ic-img" />
-                </svg>
-              </div>
-            </div>
+            )}
           </div>
+
           <div className="pdp-info">
             <span className="eyebrow">
               <svg className="gem" viewBox="0 0 24 24">
-                <use href="#gem-shape" style={{color: 'var(--ruby)'}} />
+                <use href="#gem-shape" style={{ color: 'var(--ruby)' }} />
               </svg>
-              Sneakers — Hand-Set
+              {categoryLabel(product.category)} \u2014 Hand-Set
             </span>
-            <h1>"Sapphire Row" Converse</h1>
-            <div className="rating-row">
-              <span className="stars">★★★★★</span>
-              <a href="#reviews">4.9 · 36 reviews</a>
-            </div>
+
+            <h1>{product.title}</h1>
+
             <div className="price-row">
               <span className="price">Made to order</span>
-              <span className="price-note">Dianna quotes each piece after you send the details</span>
+              <span className="price-note">
+                Dianna quotes each piece after you send the details
+              </span>
             </div>
-            <span className="one-of-one">One of one — once it's gone, it's gone</span>
-            <p className="pdp-desc">
-              Genuine Converse Chuck Taylor All Stars, fully hand-set in blue and silver crystal with pearl accents along the back seam. Every stone is placed one at a time — no printed rhinestone sheets, no shortcuts.
-            </p>
-            <span className="field-label">Size (US)</span>
-            <div className="size-row" id="sizeRow">
-              <div className="size-pill" data-size="5">5</div>
-              <div className="size-pill" data-size="6">6</div>
-              <div className="size-pill" data-size="7">7</div>
-              <div className="size-pill" data-size="8">8</div>
-              <div className="size-pill" data-size="9">9</div>
-              <div className="size-pill" data-size="10">10</div>
-              <div className="size-pill" data-size="11">11</div>
-            </div>
-            <div className="size-err" id="sizeErr">Pick a size before adding to bag.</div>
+
+            <span className="one-of-one">One of one \u2014 once it's gone, it's gone</span>
+
+            {product.description && (
+              <p className="pdp-desc">{product.description}</p>
+            )}
+
             <div className="cross-sell">
-              <svg viewBox="0 0 24 24">
-                <use href="#gem-shape" />
-              </svg>
+              <svg viewBox="0 0 24 24"><use href="#gem-shape" /></svg>
               Want different colors or your own initials instead?
               <Link to="/custom">Start a Kreation</Link>
             </div>
+
             <div className="pdp-actions">
               <Link className="btn btn-dark" to="/custom">Request This Piece</Link>
-              <a className="btn btn-ghost" href="mailto:diannabeaty65@gmail.com?subject=Question%20about%20Sapphire%20Row%20Converse">
-                <svg width="15" height="15" viewBox="0 0 24 24">
-                  <use href="#ic-bag" />
-                </svg>
+              <a
+                className="btn btn-ghost"
+                href={`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('Question about ' + product.title)}`}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24"><use href="#ic-bag" /></svg>
                 Ask a Question
               </a>
             </div>
+
             <div className="trust-row">
               <div className="trust-item">
-                <svg viewBox="0 0 24 24">
-                  <use href="#ic-hand" />
-                </svg>
+                <svg viewBox="0 0 24 24"><use href="#ic-hand" /></svg>
                 Hand-set in Laurelton, Queens
               </div>
               <div className="trust-item">
-                <svg viewBox="0 0 24 24">
-                  <use href="#ic-truck" />
-                </svg>
+                <svg viewBox="0 0 24 24"><use href="#ic-truck" /></svg>
                 Ships nationwide
               </div>
               <div className="trust-item">
-                <svg viewBox="0 0 24 24">
-                  <use href="#ic-cal" />
-                </svg>
-                3–5 days if in stock
+                <svg viewBox="0 0 24 24"><use href="#ic-cal" /></svg>
+                About 14 days, made to order
               </div>
             </div>
+
             <div className="accordions" id="pdpAccordions">
-              <div className="faq-item">
-                <button type="button" className="faq-q">
-                  Details & Care
-                  <svg viewBox="0 0 24 24">
-                    <use href="#ic-plus" />
-                  </svg>
-                </button>
-                <div className="faq-a">
-                  <p>
-                    Spot clean only with a dry or barely damp cloth. Stones are hand-set with a flexible jewelry-grade adhesive built for daily wear, not full water submersion.
-                  </p>
+              {FAQS.map((f, i) => (
+                <div className={`faq-item${openFaq === i ? ' open' : ''}`} key={f.q}>
+                  <button
+                    type="button"
+                    className="faq-q"
+                    aria-expanded={openFaq === i}
+                    onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                  >
+                    {f.q}
+                    <svg viewBox="0 0 24 24"><use href="#ic-plus" /></svg>
+                  </button>
+                  <div className="faq-a"><p>{f.a}</p></div>
                 </div>
-              </div>
-              <div className="faq-item">
-                <button type="button" className="faq-q">
-                  Shipping & Returns
-                  <svg viewBox="0 0 24 24">
-                    <use href="#ic-plus" />
-                  </svg>
-                </button>
-                <div className="faq-a">
-                  <p>
-                    Ships in 3–5 business days if in stock, or 14 days if remade to order. Because every pair is hand embellished, we accept exchanges for sizing but can't accept returns on worn or altered pieces.
-                  </p>
-                </div>
-              </div>
-              <div className="faq-item">
-                <button type="button" className="faq-q">
-                  Sizing Guide
-                  <svg viewBox="0 0 24 24">
-                    <use href="#ic-plus" />
-                  </svg>
-                </button>
-                <div className="faq-a">
-                  <p>
-                    True to standard Converse sizing. Between sizes? Size up for a roomier fit — these are made to be lived in.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
-        <section className="section dark" id="reviews">
-          <div className="wrap reviews-grid">
-            <div className="rating-summary">
-              <span className="eyebrow" style={{color: 'var(--champagne-soft)', marginBottom: '16px'}}>
-                <svg className="gem" viewBox="0 0 24 24">
-                  <use href="#gem-shape" style={{color: 'var(--champagne)'}} />
-                </svg>
-                Ratings
-              </span>
-              <div className="big">4.9</div>
-              <span className="stars">★★★★★</span>
-              <div className="count">Based on 36 reviews</div>
-              <div className="bar-row">
-                <span>5</span>
-                <div className="bar-track">
-                  <div className="bar-fill" style={{width: '88%'}}></div>
-                </div>
-                <span>32</span>
-              </div>
-              <div className="bar-row">
-                <span>4</span>
-                <div className="bar-track">
-                  <div className="bar-fill" style={{width: '9%'}}></div>
-                </div>
-                <span>3</span>
-              </div>
-              <div className="bar-row">
-                <span>3</span>
-                <div className="bar-track">
-                  <div className="bar-fill" style={{width: '3%'}}></div>
-                </div>
-                <span>1</span>
-              </div>
-              <div className="bar-row">
-                <span>2</span>
-                <div className="bar-track">
-                  <div className="bar-fill" style={{width: '0%'}}></div>
-                </div>
-                <span>0</span>
-              </div>
-              <div className="bar-row">
-                <span>1</span>
-                <div className="bar-track">
-                  <div className="bar-fill" style={{width: '0%'}}></div>
-                </div>
-                <span>0</span>
-              </div>
-              <a href="#" className="btn btn-ghost write-review-link" style={{borderColor: 'var(--ink-line)', color: 'var(--bone)'}}>Write a Review</a>
-              <div className="placeholder-note">Sample data — wire up to /average-rating & /reviews.</div>
-            </div>
-            <div className="review-list">
-              <div className="review-card">
-                <span className="stars">★★★★★</span>
-                <div className="rtitle">Better in person</div>
-                <p>
-                  The photos don't even do it justice. Every stone is packed in tight and nothing has fallen off after two months of wear.
-                </p>
-                <span className="who">Danielle · Verified Purchase</span>
-              </div>
-              <div className="review-card">
-                <span className="stars">★★★★★</span>
-                <div className="rtitle">Exactly true to size</div>
-                <p>
-                  Ordered my normal Converse size and it fit perfectly. Shipping was fast for a ready piece.
-                </p>
-                <span className="who">Angela · Verified Purchase</span>
-              </div>
-              <div className="review-card">
-                <span className="stars">★★★★★</span>
-                <div className="rtitle">Stopped in Target for these</div>
-                <p>Three people asked where I got them before I made it to the register. Worth it.</p>
-                <span className="who">Priya · Verified Purchase</span>
-              </div>
-            </div>
-          </div>
-        </section>
+      </div>
+
+      {related.length > 0 && (
         <section className="section">
           <div className="wrap">
             <div className="section-head">
-              <div>
-                <span className="eyebrow">
-                  <svg className="gem" viewBox="0 0 24 24">
-                    <use href="#gem-shape" style={{color: 'var(--ruby)'}} />
-                  </svg>
-                  You May Also Like
-                </span>
-                <h2>More from the collection</h2>
-              </div>
+              <h2>You may also like</h2>
             </div>
-          </div>
-          <div className="wrap" style={{padding: '0', maxWidth: '1240px'}}>
-            <div className="shelf">
-              <a href="#" className="shelf-card">
-                <img src="/images/kreation-02.jpg" alt="Rhinestone Uggs boots with matching bling cap" />
-                <div className="shelf-info">
-                  <span className="kicker">Boots</span>
-                  <h3>Diamond Girl Boots</h3>
-                  <span className="from">Made to order</span>
-                </div>
-                <span className="shelf-link"></span>
-              </a>
-              <a href="#" className="shelf-card">
-                <img src="/images/kreation-03.jpg" alt="Custom denim jacket with chenille lettering" />
-                <div className="shelf-info">
-                  <span className="kicker">Denim</span>
-                  <h3>Custom Jackets</h3>
-                  <span className="from">Made to order</span>
-                </div>
-                <span className="shelf-link"></span>
-              </a>
-              <a href="#" className="shelf-card">
-                <img src="/images/kreation-04.jpg" alt="Kids sequin unicorn bow sneaker" />
-                <div className="shelf-info">
-                  <span className="kicker">Kids</span>
-                  <h3>Unicorn Bow Set</h3>
-                  <span className="from">Made to order</span>
-                </div>
-                <span className="shelf-link"></span>
-              </a>
+            <div className="related-grid">
+              {related.map((p) => (
+                <Link key={p.id} to={`/product/${p.slug}`} className="product-card">
+                  {p.image_url ? <img src={p.image_url} alt={p.title} loading="lazy" /> : <div className="swatch" />}
+                  <div className="card-sweep"></div>
+                  <div className="card-info">
+                    <span className="kicker">{categoryLabel(p.category)}</span>
+                    <h3>{p.title}</h3>
+                    <span className="from">{p.blurb || 'Made to order'}</span>
+                  </div>
+                  <span className="card-link"></span>
+                </Link>
+              ))}
             </div>
           </div>
         </section>
-      </main>
-      <SiteFooter variant="slim" />
-      <div className="toast" id="toast">
-        <svg viewBox="0 0 24 24">
-          <use href="#ic-check" />
-        </svg>
-        <span id="toastMsg">Added to bag</span>
-      </div>
-    </div>
+      )}
+    </Shell>
   );
 }

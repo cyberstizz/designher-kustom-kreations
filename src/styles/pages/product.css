@@ -125,3 +125,30 @@
 .page-product .reviews-grid {grid-template-columns:1fr;gap:36px;}
 .page-product .shelf {grid-template-columns:1fr;}
 }
+
+/* States and layout for the data-driven product page. */
+.page-product .pdp-message{
+  max-width:640px;margin:0 auto;padding:90px 24px;text-align:center;
+  font-size:15.5px;line-height:1.6;color:rgba(246,239,228,0.62);
+}
+.page-product .pdp-message h1{
+  font-family:var(--font-display);font-weight:500;font-size:clamp(26px,4vw,36px);
+  color:var(--bone);margin:0 0 12px;
+}
+.page-product .pdp-message .btn{margin-top:24px;}
+.page-product .pdp-message code{
+  font-family:var(--font-mono);font-size:13px;color:var(--champagne-soft);
+}
+/* Thumbs are real buttons now — strip the UA chrome. */
+.page-product .gallery-thumbs .thumb{
+  background:none;border:1px solid var(--ink-line);padding:0;cursor:pointer;
+}
+.page-product .gallery-thumbs .thumb.active{border-color:var(--champagne);}
+.page-product .related-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:20px;
+}
+.page-product .gallery-main .swatch,
+.page-product .related-grid .swatch{
+  width:100%;aspect-ratio:4/5;
+  background:linear-gradient(135deg,var(--ink-soft),var(--ink));
+}

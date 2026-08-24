@@ -97,3 +97,17 @@
 .page-shop .footer-grid {grid-template-columns:1fr;}
 .page-shop .filter-inner {flex-direction:column;align-items:flex-start;}
 }
+
+/* Loading / empty / error states for the data-driven grid. */
+.page-shop .shop-message{
+  padding:70px 24px;text-align:center;font-size:15.5px;line-height:1.6;
+  color:rgba(246,239,228,0.6);
+}
+.page-shop .shop-message code{
+  font-family:var(--font-mono);font-size:13px;color:var(--champagne-soft);
+}
+.page-shop .shop-message .btn{margin-top:22px;}
+/* The filter pills are real buttons now, so reset the UA button styling. */
+.page-shop .pill{
+  font-family:var(--font-body);background:none;cursor:pointer;
+}
