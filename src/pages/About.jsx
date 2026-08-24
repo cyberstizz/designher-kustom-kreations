@@ -2,8 +2,17 @@ import { Link } from 'react-router-dom';
 import '../styles/pages/about.css';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import { useEffect, useState } from 'react';
+import { DEFAULTS, fetchSettings } from '../lib/settings.js';
 
 export default function About() {
+  const [site, setSite] = useState(DEFAULTS);
+  useEffect(() => {
+    let cancelled = false;
+    fetchSettings().then((s) => { if (!cancelled) setSite(s); });
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <div className="page-about">
       <svg width="0" height="0" style={{position: 'absolute'}}>
@@ -47,7 +56,7 @@ export default function About() {
       <section className="section">
         <div className="wrap story-grid">
           <div className="portrait">
-            <img src="/images/DiannaBeatyPic.jpg" alt="Dianna Beaty, founder of Designher Custom Kreations" />
+            <img src={site.founder_photo_url} alt="Dianna Beaty, founder of Designher Custom Kreations" />
             <span className="cap">Dianna Beaty — Founder, 2022</span>
           </div>
           <div className="story-copy">
