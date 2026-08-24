@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 
 import Home from './pages/Home.jsx';
 import Shop from './pages/Shop.jsx';
@@ -11,6 +11,9 @@ import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
 import OrderStatus from './pages/OrderStatus.jsx';
 import NotFound from './pages/NotFound.jsx';
+
+// The admin UI ships to Dianna only; lazy so public visitors never download it.
+const Admin = lazy(() => import('./pages/Admin.jsx'));
 
 /** Jump to the top on route change, or to the #anchor if the link has one. */
 function ScrollManager() {
@@ -43,6 +46,14 @@ export default function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-status" element={<OrderStatus />} />
+        <Route
+          path="/admin"
+          element={
+            <Suspense fallback={null}>
+              <Admin />
+            </Suspense>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>
