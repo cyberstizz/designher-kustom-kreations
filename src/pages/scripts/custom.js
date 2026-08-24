@@ -4,7 +4,7 @@ export default function init() {
   (function(){
     var state = {
       base: null, occasion: null, palette: null,
-      personalization: '', fileName: '', size: '', timeline: '', budget: '',
+      personalization: '', fileName: '', file: null, size: '', timeline: '', budget: '',
       fullName: '', email: '', phone: '', shipState: ''
     };
     var current = 1;
@@ -55,10 +55,28 @@ export default function init() {
     });
     document.getElementById('uploadInput').addEventListener('change', function(e){
       var f = e.target.files[0];
-      if(f){
-        state.fileName = f.name;
-        document.getElementById('uploadFileName').textContent = 'Attached: ' + f.name;
+      var label = document.getElementById('uploadFileName');
+      if(!f) return;
+
+      // Mirror the bucket's limits so the visitor finds out now rather than
+      // after filling in the rest of the form.
+      var allowed = ['image/jpeg','image/png','image/webp','image/heic','image/heif'];
+      if(allowed.indexOf(f.type) === -1){
+        state.file = null; state.fileName = '';
+        label.textContent = 'That file is not a photo. Try a JPG, PNG or HEIC.';
+        e.target.value = '';
+        return;
       }
+      if(f.size > 10 * 1024 * 1024){
+        state.file = null; state.fileName = '';
+        label.textContent = 'That photo is over 10MB. Please pick a smaller one.';
+        e.target.value = '';
+        return;
+      }
+
+      state.file = f;
+      state.fileName = f.name;
+      label.textContent = 'Attached: ' + f.name;
     });
   
     function showFieldError(id, show){
@@ -156,9 +174,8 @@ export default function init() {
         size: state.size || null,
         timeline: state.timeline || null,
         budget: state.budget || null,
-        // The photo itself is not uploaded yet; we record the filename so
-        // Dianna knows to ask for it by reply. See the task list in README.
-        reference_photo: state.fileName || null,
+        // Replaced below with the storage path once the photo uploads.
+        reference_photo: null,
         full_name: state.fullName || '',
         email: state.email || '',
         phone: state.phone || null,
@@ -168,7 +185,22 @@ export default function init() {
       // Dynamic import: the Supabase client is a large dependency and only
       // matters at the moment of submit, so it stays out of the main bundle.
       import('../../lib/supabase.js').then(function(m){
-        return m.submitInquiry(payload);
+        // No photo attached: skip straight to saving the request.
+        if(!state.file) return m.submitInquiry(payload);
+
+        if(submitBtn){ submitBtn.textContent = 'Uploading photo\u2026'; }
+        return m.uploadReferencePhoto(state.file).then(function(up){
+          if(up.error){
+            // A failed photo must not cost her the lead. Save the request
+            // anyway and note that the photo needs to come by email.
+            console.error('[photo]', up.error);
+            payload.reference_photo = state.fileName + ' (upload failed \u2014 ask by email)';
+          } else {
+            payload.reference_photo = up.path;
+          }
+          if(submitBtn){ submitBtn.textContent = 'Sending\u2026'; }
+          return m.submitInquiry(payload);
+        });
       }).then(function(res){
         if(!res.ok) throw (res.error || new Error('Submission failed'));
         showConfirmation();
