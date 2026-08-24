@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
+import { supabase, isSupabaseConfigured, signedPhotoUrl } from '../lib/supabase.js';
 import ProductsPanel from './ProductsPanel.jsx';
 import '../styles/pages/admin.css';
 
@@ -70,6 +70,42 @@ function Login() {
         </Link>
       </div>
     </div>
+  );
+}
+
+/* ---------------------------------------------------------- photo viewer */
+/**
+ * The inquiry-photos bucket is private, so there is no permanent URL to
+ * store. This asks for a short-lived signed link when the request is opened.
+ * Older inquiries hold a bare filename from before uploads existed; those
+ * are shown as text rather than a broken image.
+ */
+function ReferencePhoto({ path }) {
+  const [url, setUrl] = useState(null);
+  const [failed, setFailed] = useState(false);
+
+  const looksLikePath = path && path.includes('/') && !path.includes(' ');
+
+  useEffect(() => {
+    if (!looksLikePath) return;
+    let cancelled = false;
+    signedPhotoUrl(path).then(({ url, error }) => {
+      if (cancelled) return;
+      if (error || !url) setFailed(true);
+      else setUrl(url);
+    });
+    return () => { cancelled = true; };
+  }, [path, looksLikePath]);
+
+  if (!looksLikePath) return <span>{path} — ask them to email it</span>;
+  if (failed) return <span>Photo attached, but the link couldn't be opened.</span>;
+  if (!url) return <span>Loading photo…</span>;
+
+  return (
+    <a className="ref-photo" href={url} target="_blank" rel="noreferrer">
+      <img src={url} alt="Customer reference photo" />
+      <span>Open full size</span>
+    </a>
   );
 }
 
@@ -213,9 +249,11 @@ function Inquiries() {
                         </div>
                       )}
                       {r.reference_photo && (
-                        <div>
-                          <dt>Photo</dt>
-                          <dd>{r.reference_photo} — ask them to email it</dd>
+                        <div className="photo-cell">
+                          <dt>Their photo</dt>
+                          <dd>
+                            <ReferencePhoto path={r.reference_photo} />
+                          </dd>
                         </div>
                       )}
                     </dl>
