@@ -1,4 +1,5 @@
 // Page behaviour ported from the custom prototype. Runs once on mount.
+
 export default function init() {
   (function(){
     var state = {
@@ -127,10 +128,9 @@ export default function init() {
       btn.addEventListener('click', function(){ setStep(Number(btn.dataset.prev)); });
     });
   
-    // ---- Submit to Netlify Forms -------------------------------------
-    // Netlify intercepts a urlencoded POST to any path on the site when the
-    // body carries a form-name matching a form it detected at deploy time.
-    // The matching static form lives in index.html.
+    // ---- Submit the inquiry to Supabase --------------------------------
+    // Row Level Security allows anon INSERT on `inquiries` and nothing else,
+    // so this is safe from the browser. See supabase/schema.sql.
     function showConfirmation(){
       document.getElementById('wizard').style.display = 'none';
       document.getElementById('tracker').style.display = 'none';
@@ -144,49 +144,44 @@ export default function init() {
 
       var submitBtn = document.querySelector('#wizard [type="submit"]');
       var originalLabel = submitBtn ? submitBtn.textContent : '';
+      var errEl = document.getElementById('err4');
+      if(errEl){ errEl.style.display = 'none'; }
       if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'Sending\u2026'; }
 
       var payload = {
-        'form-name': 'custom-order',
-        'bot-field': '',
-        base: state.base || '',
-        occasion: state.occasion || '',
-        palette: state.palette || '',
-        personalization: state.personalization || '',
-        size: state.size || '',
-        timeline: state.timeline || '',
-        budget: state.budget || '',
-        fullName: state.fullName || '',
+        base: state.base || null,
+        occasion: state.occasion || null,
+        palette: state.palette || null,
+        personalization: state.personalization || null,
+        size: state.size || null,
+        timeline: state.timeline || null,
+        budget: state.budget || null,
+        // The photo itself is not uploaded yet; we record the filename so
+        // Dianna knows to ask for it by reply. See the task list in README.
+        reference_photo: state.fileName || null,
+        full_name: state.fullName || '',
         email: state.email || '',
-        phone: state.phone || '',
-        shipState: state.shipState || '',
-        // Netlify Forms stores files only on multipart submissions. This sends
-        // the filename so Dianna knows to ask for the photo by reply.
-        referencePhoto: state.fileName ? (state.fileName + ' (ask customer to email this)') : 'none'
+        phone: state.phone || null,
+        ship_state: state.shipState || null
       };
 
-      var body = Object.keys(payload).map(function(k){
-        return encodeURIComponent(k) + '=' + encodeURIComponent(payload[k]);
-      }).join('&');
-
-      fetch('/', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: body
+      // Dynamic import: the Supabase client is a large dependency and only
+      // matters at the moment of submit, so it stays out of the main bundle.
+      import('../../lib/supabase.js').then(function(m){
+        return m.submitInquiry(payload);
       }).then(function(res){
-        if(!res.ok) throw new Error('Submission failed: ' + res.status);
+        if(!res.ok) throw (res.error || new Error('Submission failed'));
         showConfirmation();
       }).catch(function(err){
-        console.error(err);
+        console.error('[inquiry]', err);
         if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = originalLabel; }
-        var errEl = document.getElementById('err4');
         if(errEl){
-          errEl.textContent = "That didn't send. Check your connection and try again, or email diannabeaty65@gmail.com directly.";
+          errEl.textContent = "That didn't send. Check your connection and try again, or email designherinc@gmail.com directly.";
           errEl.style.display = 'block';
         }
       });
     });
-  
+
     document.querySelectorAll('.faq-q').forEach(function(q){
       q.addEventListener('click', function(){
         var item = q.closest('.faq-item');
