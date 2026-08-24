@@ -20,7 +20,7 @@ async function rest(path) {
 
 /** The SDK, loaded on demand. Only admin paths pay for it. */
 async function sdk() {
-  const mod = await import('./supabase.js');
+  const mod = await import('../../supabase');
   return mod.supabase;
 }
 
