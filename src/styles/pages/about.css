@@ -63,9 +63,14 @@
 .page-about .footer-col a:hover {color:var(--bone);}
 .page-about .footer-bottom {display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid var(--ink-line);font-size:12px;color:rgba(246,239,228,0.45);flex-wrap:wrap;gap:14px;}
 @media (max-width:900px) {
-.page-about nav.primary-nav {display:none;}
 .page-about .story-grid {grid-template-columns:1fr;gap:36px;}
-.page-about .portrait {position:static;max-width:320px;}
+.page-about .portrait {
+    /* Was position:static, which broke the absolutely-positioned photo out of
+       its frame and stretched it across the whole page. It only needed to stop
+       being sticky, not stop being a positioning context. */
+    position:relative;top:auto;
+    max-width:300px;margin:0 auto 8px;width:100%;
+  }
 .page-about .value-grid {grid-template-columns:1fr;}
 .page-about .footer-grid {grid-template-columns:1fr 1fr;}
 .page-about .stats-row {gap:32px;}
