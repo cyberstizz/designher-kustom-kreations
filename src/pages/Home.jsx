@@ -5,6 +5,7 @@ import init from './scripts/home.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
 import { categoryLabel, fetchPublishedProducts } from '../lib/products.js';
+import { DEFAULTS, fetchSettings } from '../lib/settings.js';
 
 export default function Home() {
   useEffect(() => init(), []);
@@ -13,6 +14,14 @@ export default function Home() {
   // in the admin. The container is already a .reveal element observed at
   // mount, so loading these late doesn't break the entrance animation.
   const [shelf, setShelf] = useState([]);
+  // Photos Dianna controls from the admin. Defaults render immediately so the
+  // hero never flashes empty while this resolves.
+  const [site, setSite] = useState(DEFAULTS);
+  useEffect(() => {
+    let cancelled = false;
+    fetchSettings().then((s) => { if (!cancelled) setSite(s); });
+    return () => { cancelled = true; };
+  }, []);
   useEffect(() => {
     let cancelled = false;
     fetchPublishedProducts().then((res) => {
@@ -72,9 +81,9 @@ export default function Home() {
             </div>
           </div>
           <Link to="/product" className="hero-media" aria-label="View Sapphire Row Converse product page">
-            <img src="/images/kreation-01.jpg" alt="Blue rhinestone and pearl hand-set Converse high-tops, back view" />
+            <img src={site.hero_image_url} alt="Featured hand-set kreation" />
             <div className="sweep"></div>
-            <span className="hero-badge">No. 001 — “Sapphire Row” Converse</span>
+            {site.hero_badge && <span className="hero-badge">{site.hero_badge}</span>}
           </Link>
         </section>
         <div className="marquee-strip">
@@ -190,7 +199,7 @@ export default function Home() {
           <div className="wrap">
             <div className="about-grid">
               <div className="about-portrait reveal">
-                <img src="/images/DiannaBeatyPic.jpg" alt="Dianna Beaty, founder of Designher Custom Kreations" />
+                <img src={site.founder_photo_url} alt="Dianna Beaty, founder of Designher Custom Kreations" />
                 <span className="cap">Dianna Beaty — Founder, 2022</span>
               </div>
               <div className="about-copy reveal">
