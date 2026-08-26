@@ -88,6 +88,7 @@ export default function Home() {
         </section>
         <div className="marquee-strip">
           <div className="marquee-track" aria-hidden="true">
+            <span>◆ HAND MADE ALWAYS</span>
             <span>◆ @designherck@gmail.com</span>
             <span href="https://m.facebook.com/DesignHerInc">◆ Facebook / DesignHerInc</span>
             <span href="https://www.tiktok.com/@designher_inc">◆ TikTok / @designher_inc</span>
