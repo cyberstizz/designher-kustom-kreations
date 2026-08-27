@@ -7,7 +7,11 @@ import Product from './pages/Product.jsx';
 import CustomKreation from './pages/CustomKreation.jsx';
 import About from './pages/About.jsx';
 import Reviews from './pages/Reviews.jsx';
+import Cart from './pages/Cart.jsx';
+import Checkout from './pages/Checkout.jsx';
 import OrderStatus from './pages/OrderStatus.jsx';
+import SignIn from './pages/SignIn.jsx';
+import Account from './pages/Account.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // The admin UI ships to Dianna only; lazy so public visitors never download it.
@@ -41,7 +45,11 @@ export default function App() {
         <Route path="/custom" element={<CustomKreation />} />
         <Route path="/about" element={<About />} />
         <Route path="/reviews" element={<Reviews />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-status" element={<OrderStatus />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/account" element={<Account />} />
         <Route
           path="/admin"
           element={

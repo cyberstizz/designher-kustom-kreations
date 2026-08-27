@@ -66,6 +66,7 @@ export default function SiteFooter({ variant = 'full' }) {
             <h4>Info</h4>
             <Link to="/about">Shipping &amp; Turnaround</Link>
             <Link to="/about">Care Guide</Link>
+            <Link to="/account">Check on your order</Link>
             <Link to="/admin" className="studio-link">Studio sign in</Link>
           </div>
         </div>

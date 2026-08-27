@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { supabase, isSupabaseConfigured, signedPhotoUrl } from '../lib/supabase.js';
 import ProductsPanel from './ProductsPanel.jsx';
 import SitePanel from './SitePanel.jsx';
+import { isAdmin as checkIsAdmin } from '../lib/auth.js';
+import QuotePanel from './QuotePanel.jsx';
 import '../styles/pages/admin.css';
 
 const STATUSES = ['new', 'quoted', 'in progress', 'shipped', 'closed'];
@@ -266,6 +268,8 @@ function Inquiries() {
                       </div>
                     )}
 
+                    <QuotePanel inquiry={r} />
+
                     <div className="inq-actions">
                       <label htmlFor={`status-${r.id}`}>Status</label>
                       <select
@@ -299,6 +303,9 @@ export default function Admin() {
   const [session, setSession] = useState(null);
   const [tab, setTab] = useState('inquiries');
   const [checking, setChecking] = useState(true);
+  // null = not determined yet. A customer account signing in here is a
+  // normal event now, not an error, so it gets its own screen.
+  const [admin, setAdmin] = useState(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -312,6 +319,16 @@ export default function Admin() {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!session) {
+      setAdmin(null);
+      return;
+    }
+    let cancelled = false;
+    checkIsAdmin().then((ok) => { if (!cancelled) setAdmin(ok); });
+    return () => { cancelled = true; };
+  }, [session]);
 
   if (!isSupabaseConfigured) {
     return (
@@ -337,6 +354,40 @@ export default function Admin() {
     return (
       <div className="page-admin">
         <Login />
+      </div>
+    );
+  }
+
+  if (admin === null) {
+    return (
+      <div className="page-admin">
+        <p className="admin-note">Checking your account…</p>
+      </div>
+    );
+  }
+
+  if (admin === false) {
+    return (
+      <div className="page-admin">
+        <div className="admin-login">
+          <div className="login-card">
+            <span className="login-mark">Designher</span>
+            <h1>Wrong door</h1>
+            <p className="login-sub">
+              This is the studio area. Your account can see your own orders instead.
+            </p>
+            <Link className="btn-admin" to="/account" style={{ textDecoration: 'none' }}>
+              Go to your kreations
+            </Link>
+            <button
+              className="btn-admin ghost"
+              style={{ marginTop: 12 }}
+              onClick={() => supabase.auth.signOut()}
+            >
+              Sign out
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

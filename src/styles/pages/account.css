@@ -1,0 +1,118 @@
+/* account — customer portal, scoped to .page-account
+   Customers arrive here from an email on a phone, so everything is
+   single-column and touch-sized by default. */
+
+.page-account{
+  min-height:100vh;background:var(--ink);color:var(--bone);
+  font-family:var(--font-body);
+}
+
+.page-account .account-centre{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+}
+.page-account .account-card{
+  width:100%;max-width:400px;background:var(--ink-soft);
+  border:1px solid var(--ink-line);border-radius:8px;padding:36px 32px 30px;
+}
+
+.page-account .account-mark{display:block;margin:0 0 22px;}
+.page-account .account-mark .script{
+  display:block;font-family:var(--font-display);font-style:italic;font-size:26px;color:var(--bone);
+}
+.page-account .account-mark .tag{
+  display:block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.18em;
+  color:var(--champagne-soft);margin-top:2px;
+}
+.page-account .account-mark.small .script{font-size:21px;}
+
+.page-account h1{
+  font-family:var(--font-display);font-weight:500;font-size:clamp(22px,4vw,28px);margin:0 0 8px;
+}
+.page-account .account-sub{
+  margin:0 0 22px;font-size:14.5px;line-height:1.6;color:rgba(246,239,228,0.62);
+}
+.page-account .account-lede{
+  margin:0 0 24px;font-size:14.5px;line-height:1.6;color:rgba(246,239,228,0.6);
+}
+.page-account .account-hint{
+  margin:16px 0 0;font-size:12.5px;line-height:1.6;color:rgba(246,239,228,0.45);
+}
+.page-account .account-hint.spaced{margin-top:30px;}
+.page-account .account-note{padding:60px 24px;text-align:center;color:rgba(246,239,228,0.6);}
+.page-account .account-error{
+  margin:0 0 14px;padding:11px 14px;border-radius:4px;font-size:13.5px;
+  background:rgba(176,20,47,0.16);border:1px solid rgba(176,20,47,0.4);color:#ff9fac;
+}
+
+.page-account label{
+  display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--champagne-soft);margin:0 0 7px;
+}
+.page-account input{
+  width:100%;box-sizing:border-box;background:var(--ink);color:var(--bone);
+  border:1px solid var(--ink-line);border-radius:4px;padding:13px 14px;
+  font-family:var(--font-body);font-size:16px;margin:0 0 14px;
+}
+.page-account input:focus{outline:none;border-color:var(--champagne-soft);}
+
+.page-account .btn-account{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:100%;min-height:46px;padding:13px 22px;border:1px solid transparent;border-radius:4px;
+  background:var(--ruby);color:var(--bone);text-decoration:none;
+  font-family:var(--font-body);font-size:14.5px;font-weight:600;cursor:pointer;
+  transition:background .25s var(--ease);
+}
+.page-account .btn-account:hover:not(:disabled){background:var(--ruby-bright);}
+.page-account .btn-account:disabled{opacity:.6;cursor:default;}
+.page-account .btn-account.ghost{
+  width:auto;min-height:38px;padding:9px 16px;font-size:13px;
+  background:none;border-color:var(--ink-line);color:rgba(246,239,228,0.75);
+}
+.page-account .btn-account.ghost:hover{border-color:var(--champagne-soft);color:var(--bone);background:none;}
+.page-account .link-button{
+  background:none;border:0;padding:0;cursor:pointer;color:var(--champagne-soft);
+  font-family:inherit;font-size:inherit;text-decoration:underline;
+}
+.page-account .account-back{
+  display:block;margin-top:24px;font-size:13px;color:rgba(246,239,228,0.5);
+}
+.page-account .account-back:hover{color:var(--champagne-soft);}
+
+.page-account .account-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding:16px 20px;border-bottom:1px solid var(--ink-line);
+}
+.page-account .account-header-right{display:flex;align-items:center;gap:14px;}
+.page-account .account-user{font-size:12.5px;color:rgba(246,239,228,0.5);}
+.page-account .account-main{max-width:720px;margin:0 auto;padding:30px 20px 70px;}
+
+.page-account .account-empty{
+  padding:44px 24px;text-align:center;border:1px dashed var(--ink-line);border-radius:8px;
+}
+.page-account .account-empty p{margin:0 0 8px;font-size:15px;color:rgba(246,239,228,0.7);}
+.page-account .account-empty .btn-account{width:auto;margin-top:16px;}
+
+.page-account .request-list{list-style:none;margin:0;padding:0;}
+.page-account .request-row{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:16px 0;border-top:1px solid var(--ink-line);
+}
+.page-account .request-row:last-child{border-bottom:1px solid var(--ink-line);}
+.page-account .rr-main{flex:1;min-width:190px;display:flex;flex-direction:column;gap:4px;}
+.page-account .rr-title{font-size:15px;font-weight:600;}
+.page-account .rr-meta{font-size:13px;color:rgba(246,239,228,0.55);}
+.page-account .rr-price{font-family:var(--font-display);font-size:19px;}
+.page-account .rr-status{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 11px;border-radius:999px;white-space:nowrap;
+  background:rgba(246,239,228,0.1);color:rgba(246,239,228,0.7);
+}
+.page-account .rr-status.s-quoted{background:rgba(203,163,92,0.85);color:#2a1f10;}
+.page-account .rr-status.s-in-progress{background:rgba(203,163,92,0.26);color:var(--champagne);}
+.page-account .rr-status.s-shipped{background:rgba(120,180,140,0.25);color:#9ed4b0;}
+.page-account .rr-status.s-closed{background:rgba(120,180,140,0.18);color:#8fc5a2;}
+
+@media (max-width:520px){
+  .page-account .account-card{padding:30px 22px 26px;}
+  .page-account .account-main{padding:24px 16px 60px;}
+}

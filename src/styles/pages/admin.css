@@ -336,3 +336,62 @@
   border:1px solid var(--ink-line);border-radius:4px;padding:12px;font-size:14px;
 }
 .page-admin .setting-controls .btn-admin{width:auto;align-self:flex-start;}
+
+/* ------------------------------------------------- quotes and messages */
+.page-admin .quote-panel{
+  margin:20px 0 0;padding:18px 0 0;border-top:0.5px solid var(--ink-line);
+}
+.page-admin .qf-label{
+  display:block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(246,239,228,0.42);margin:0 0 10px;
+}
+.page-admin .live-quote{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:14px 16px;margin:0 0 18px;border-radius:5px;
+  background:rgba(203,163,92,0.12);border:1px solid rgba(203,163,92,0.38);
+}
+.page-admin .lq-label{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--champagne-soft);display:block;margin-bottom:3px;
+}
+.page-admin .lq-amount{font-family:var(--font-display);font-size:26px;font-weight:500;}
+.page-admin .lq-meta{font-size:12.5px;color:rgba(246,239,228,0.6);}
+
+.page-admin .quote-form{margin:0 0 22px;}
+.page-admin .qf-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px;}
+.page-admin .qf-row input{
+  width:130px;background:var(--ink);color:var(--bone);
+  border:1px solid var(--ink-line);border-radius:4px;padding:12px 14px;
+  font-family:var(--font-body);font-size:16px;
+}
+.page-admin .quote-panel textarea{
+  width:100%;box-sizing:border-box;background:var(--ink);color:var(--bone);
+  border:1px solid var(--ink-line);border-radius:4px;padding:12px 14px;
+  font-family:var(--font-body);font-size:15px;line-height:1.55;resize:vertical;
+}
+.page-admin .quote-panel input:focus,
+.page-admin .quote-panel textarea:focus{outline:none;border-color:var(--champagne-soft);}
+.page-admin .quote-panel .btn-admin{margin-top:10px;}
+
+.page-admin .thread{margin:0 0 4px;padding-top:18px;border-top:0.5px solid var(--ink-line);}
+.page-admin .msg{margin:0 0 14px;}
+.page-admin .msg-who{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:rgba(246,239,228,0.42);
+}
+.page-admin .msg p{
+  margin:5px 0 0;padding:11px 14px;border-radius:5px;font-size:14.5px;line-height:1.55;
+  background:var(--ink);
+}
+.page-admin .msg-admin p{background:rgba(203,163,92,0.1);}
+
+.page-admin .quote-history{margin:20px 0 0;padding-top:16px;border-top:0.5px solid var(--ink-line);}
+.page-admin .qh-row{
+  display:flex;align-items:center;gap:14px;padding:7px 0;font-size:13.5px;
+  color:rgba(246,239,228,0.55);
+}
+.page-admin .qh-amount{text-decoration:line-through;}
+.page-admin .qh-status{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+}
+.page-admin .qh-date{margin-left:auto;font-family:var(--font-mono);font-size:11px;}
