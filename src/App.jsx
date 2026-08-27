@@ -12,6 +12,7 @@ import Checkout from './pages/Checkout.jsx';
 import OrderStatus from './pages/OrderStatus.jsx';
 import SignIn from './pages/SignIn.jsx';
 import Account from './pages/Account.jsx';
+import RequestDetail from './pages/RequestDetail.jsx';
 import NotFound from './pages/NotFound.jsx';
 
 // The admin UI ships to Dianna only; lazy so public visitors never download it.
@@ -50,6 +51,7 @@ export default function App() {
         <Route path="/order-status" element={<OrderStatus />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/account/:id" element={<RequestDetail />} />
         <Route
           path="/admin"
           element={

@@ -116,3 +116,77 @@
   .page-account .account-card{padding:30px 22px 26px;}
   .page-account .account-main{padding:24px 16px 60px;}
 }
+
+/* ---------------------------------------------- request detail (customer) */
+.page-account .detail-back{
+  display:inline-block;margin:0 0 16px;font-size:13px;color:rgba(246,239,228,0.55);
+}
+.page-account .detail-back:hover{color:var(--champagne-soft);}
+
+.page-account .detail-card{
+  background:var(--ink-soft);border:1px solid var(--ink-line);border-radius:8px;
+  padding:20px 22px 24px;
+}
+.page-account .detail-top{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.page-account .detail-title{
+  margin:0;font-size:16px;font-weight:600;text-transform:capitalize;
+}
+.page-account .detail-meta{
+  margin:3px 0 0;font-size:13px;color:rgba(246,239,228,0.55);
+}
+.page-account .detail-pill{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+  padding:5px 12px;border-radius:999px;white-space:nowrap;
+  background:rgba(203,163,92,0.85);color:#2a1f10;
+}
+.page-account .detail-pill.ok{background:rgba(120,180,140,0.28);color:#9ed4b0;}
+
+.page-account .price-block{
+  display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  background:var(--ink);border-radius:6px;padding:18px 20px;margin:16px 0 0;
+}
+.page-account .price-block.muted{background:none;border:1px dashed var(--ink-line);}
+.page-account .pb-label{
+  margin:0;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:rgba(246,239,228,0.45);
+}
+.page-account .pb-amount{
+  margin:5px 0 0;font-family:var(--font-display);font-size:30px;font-weight:500;line-height:1;
+}
+.page-account .pb-note{margin:0;font-size:13px;color:rgba(246,239,228,0.6);}
+
+.page-account .detail-actions{display:flex;gap:10px;margin:16px 0 0;flex-wrap:wrap;}
+.page-account .btn-account.solid{width:auto;gap:8px;}
+.page-account .btn-account.wide{width:auto;gap:8px;min-height:46px;padding:13px 20px;font-size:14px;}
+
+.page-account .detail-thread{
+  margin:22px 0 0;padding-top:20px;border-top:1px solid var(--ink-line);
+}
+.page-account .chat-row{display:flex;gap:12px;margin:14px 0 0;}
+.page-account .chat-avatar{
+  width:34px;height:34px;border-radius:50%;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.04em;
+  background:rgba(246,239,228,0.1);color:rgba(246,239,228,0.75);
+}
+.page-account .chat-avatar.her{background:rgba(176,20,47,0.85);color:var(--bone);}
+.page-account .chat-body{flex:1;min-width:0;}
+.page-account .chat-who{margin:0;font-size:13px;color:rgba(246,239,228,0.5);}
+.page-account .chat-who strong{color:var(--bone);font-weight:600;}
+.page-account .chat-text{
+  margin:5px 0 0;font-size:14.5px;line-height:1.6;color:rgba(246,239,228,0.88);
+}
+.page-account .detail-thread textarea{
+  width:100%;box-sizing:border-box;margin:18px 0 0;
+  background:var(--ink);color:var(--bone);border:1px solid var(--ink-line);border-radius:4px;
+  padding:12px 14px;font-family:var(--font-body);font-size:15px;line-height:1.55;resize:vertical;
+}
+.page-account .detail-thread textarea:focus{outline:none;border-color:var(--champagne-soft);}
+.page-account .detail-thread .btn-account{margin-top:10px;}
+
+@media (max-width:520px){
+  .page-account .detail-card{padding:18px 16px 20px;}
+  .page-account .detail-actions .btn-account{width:100%;}
+}
