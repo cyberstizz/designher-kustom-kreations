@@ -258,3 +258,18 @@ nav.primary-nav a.active::after{width:100%;}
 /* Dianna's way in. Quiet on purpose — it's a staff door, not a feature. */
 .footer-col a.studio-link{opacity:.45;font-size:12.5px;}
 .footer-col a.studio-link:hover{opacity:1;}
+
+/* Header sign-in. Quieter than the primary button so "Start a Kreation"
+   stays the main action for first-time visitors. */
+.header-icons .header-signin{
+  font-size:13.5px;font-weight:500;color:rgba(246,239,228,0.72);
+  padding:10px 4px;white-space:nowrap;
+  transition:color .25s var(--ease);
+}
+.header-icons .header-signin:hover{color:var(--bone);}
+
+/* On phones the drawer carries it, so hide the inline one to keep the bar
+   from crowding the wordmark. */
+@media (max-width:900px){
+  .header-icons .header-signin{display:none;}
+}

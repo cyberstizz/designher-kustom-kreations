@@ -41,6 +41,8 @@ export default function SiteHeader() {
     </>
   );
 
+  const signInLink = <NavLink to="/account">Sign in</NavLink>;
+
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -52,6 +54,12 @@ export default function SiteHeader() {
         <nav className="primary-nav">{links}</nav>
 
         <div className="header-icons">
+          {/* Goes to /account, which shows the sign-in form when signed out
+              and their kreations when signed in — one link, right either way. */}
+          <Link to="/account" className="header-signin">
+            Sign in
+          </Link>
+
           <Link to="/custom" className="btn-quote">
             Start a Kreation
           </Link>
@@ -76,7 +84,10 @@ export default function SiteHeader() {
         className={`mobile-nav${open ? ' open' : ''}`}
         hidden={!open}
       >
-        <nav className="primary-nav">{links}</nav>
+        <nav className="primary-nav">
+          {links}
+          {signInLink}
+        </nav>
       </div>
     </header>
   );
