@@ -223,9 +223,17 @@
 .page-custom .option-grid {grid-template-columns:repeat(2,1fr);}
 .page-custom .swatch-grid {grid-template-columns:1fr;}
 .page-custom .field-row {grid-template-columns:1fr;}
-.page-custom nav.primary-nav {display:none;}
 .page-custom .process {grid-template-columns:1fr;gap:36px;}
 .page-custom .process-line {display:none;}
 .page-custom .insp-grid {grid-template-columns:repeat(3,1fr);}
 .page-custom .tracker-step .lbl {display:none;}
+}
+
+/* Tells the customer how to come back and see their quote. Until the
+   notification email exists, this is the only thing pointing them at it. */
+.page-custom .confirm-signin{
+  margin-top:14px;font-size:14px;color:rgba(246,239,228,0.55);
+}
+.page-custom .confirm-signin a{
+  color:var(--champagne-soft);text-decoration:underline;text-underline-offset:3px;
 }

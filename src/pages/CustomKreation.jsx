@@ -296,7 +296,12 @@ export default function CustomKreation() {
             Dianna's hands.
           </h2>
           <p>
-            Expect a personal reply with pricing and a mockup within 2 business days. Once you approve it and the deposit's in, your 14-day build starts.
+            Dianna will look this over and put a price on it. When she does, you can
+            see it, ask her anything, and accept — all in one place.
+          </p>
+          <p className="confirm-signin">
+            Check back any time at <Link to="/signin">your account</Link>, using this
+            same email address. No password to set up.
           </p>
           <Link to="/" className="btn btn-ghost">Back to Home</Link>
         </div>
