@@ -44,7 +44,6 @@ export default function App() {
         <Route path="/custom" element={<CustomKreation />} />
         <Route path="/about" element={<About />} />
         <Route path="/reviews" element={<Reviews />} />
-        <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-status" element={<OrderStatus />} />
         <Route path="/signin" element={<SignIn />} />
