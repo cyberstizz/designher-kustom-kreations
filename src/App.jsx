@@ -7,7 +7,6 @@ import Product from './pages/Product.jsx';
 import CustomKreation from './pages/CustomKreation.jsx';
 import About from './pages/About.jsx';
 import Reviews from './pages/Reviews.jsx';
-import OrderStatus from './pages/OrderStatus.jsx';
 import SignIn from './pages/SignIn.jsx';
 import Account from './pages/Account.jsx';
 import RequestDetail from './pages/RequestDetail.jsx';
@@ -44,8 +43,6 @@ export default function App() {
         <Route path="/custom" element={<CustomKreation />} />
         <Route path="/about" element={<About />} />
         <Route path="/reviews" element={<Reviews />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/order-status" element={<OrderStatus />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/account" element={<Account />} />
         <Route path="/account/:id" element={<RequestDetail />} />
