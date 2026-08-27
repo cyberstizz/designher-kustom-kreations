@@ -15,8 +15,8 @@ function Bottom({ children }) {
  * Site footer.
  *
  * variant="full" — brand blurb, link columns, social. Marketing pages.
- * variant="slim" — copyright bar only. Cart, product and wizard pages,
- *                  where the prototype deliberately kept chrome quiet.
+ * variant="slim" — copyright bar only. Product and wizard pages, where
+ *                  the prototype deliberately kept chrome quiet.
  */
 export default function SiteFooter({ variant = 'full' }) {
   if (variant === 'slim') {
