@@ -39,11 +39,13 @@ export async function fetchMyRequests() {
   if (error) return { data: [], error };
   if (!inquiries.length) return { data: [], error: null };
 
-  // Attach the live quote, if there is one, so the list can show a price.
+  // Attach the most recent quote that still counts, so the list can show a
+  // price and whether the customer already accepted it.
   const { data: quotes, error: quoteError } = await supabase
     .from('quotes')
     .select('*')
-    .eq('status', 'sent');
+    .in('status', ['sent', 'accepted'])
+    .order('created_at', { ascending: false });
 
   if (quoteError) {
     console.error('[account] could not load quotes', quoteError);
@@ -55,4 +57,35 @@ export async function fetchMyRequests() {
     data: inquiries.map((i) => ({ ...i, quote: byInquiry.get(i.id) || null })),
     error: null,
   };
+}
+
+/** One request with its live quote and full conversation. */
+export async function fetchRequest(id) {
+  const supabase = await sdk();
+  if (!supabase) return { data: null, error: null };
+
+  const { data: inquiry, error } = await supabase
+    .from('inquiries')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle();
+
+  // RLS returns nothing rather than an error when the row isn't theirs, so
+  // "not found" and "not yours" look identical from here. That's intended.
+  if (error || !inquiry) return { data: null, error };
+
+  const [{ data: quotes }, { data: messages }] = await Promise.all([
+    supabase.from('quotes').select('*').eq('inquiry_id', id).order('created_at', { ascending: false }),
+    supabase.from('messages').select('*').eq('inquiry_id', id).order('created_at', { ascending: true }),
+  ]);
+
+  const live = (quotes || []).find((qt) => qt.status === 'sent' || qt.status === 'accepted') || null;
+  return { data: { ...inquiry, quote: live, messages: messages || [] }, error: null };
+}
+
+/** What the customer should see, blending request status with quote status. */
+export function displayStatus(request) {
+  if (request.quote?.status === 'accepted') return 'Accepted';
+  if (request.status === 'quoted') return 'Quote ready';
+  return statusLabel(request.status);
 }

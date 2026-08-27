@@ -94,3 +94,19 @@ export async function sendMessage(inquiryId, body, sender = 'admin') {
     .single();
   return { data, error };
 }
+
+/**
+ * A customer accepting or declining their own quote.
+ *
+ * The policy in 006 permits only these two target values, and only on a
+ * quote still marked "sent" that belongs to the caller. A customer can
+ * never change the amount.
+ */
+export async function respondToQuote(quoteId, status) {
+  if (!['accepted', 'declined'].includes(status)) {
+    return { error: new Error('Invalid response') };
+  }
+  const supabase = await sdk();
+  const { error } = await supabase.from('quotes').update({ status }).eq('id', quoteId);
+  return { error };
+}

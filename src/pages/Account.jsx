@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { claimMyInquiries, signOut } from '../lib/auth.js';
-import { fetchMyRequests, statusLabel } from '../lib/account.js';
+import { fetchMyRequests, displayStatus } from '../lib/account.js';
 import { formatMoney } from '../lib/quotes.js';
 import SignIn from './SignIn.jsx';
 import '../styles/pages/account.css';
@@ -117,8 +117,12 @@ export default function Account() {
                 {r.quote && <span className="rr-price">{formatMoney(r.quote.amount_cents)}</span>}
 
                 <span className={`rr-status s-${r.status.replace(/\s+/g, '-')}`}>
-                  {statusLabel(r.status)}
+                  {displayStatus(r)}
                 </span>
+
+                <Link className="btn-account ghost" to={`/account/${r.id}`}>
+                  Open
+                </Link>
               </li>
             ))}
           </ul>
