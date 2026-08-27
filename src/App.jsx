@@ -7,7 +7,6 @@ import Product from './pages/Product.jsx';
 import CustomKreation from './pages/CustomKreation.jsx';
 import About from './pages/About.jsx';
 import Reviews from './pages/Reviews.jsx';
-import Cart from './pages/Cart.jsx';
 import Checkout from './pages/Checkout.jsx';
 import OrderStatus from './pages/OrderStatus.jsx';
 import SignIn from './pages/SignIn.jsx';
