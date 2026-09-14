@@ -394,4 +394,43 @@
 .page-admin .qh-status{
   font-family:var(--font-mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
 }
-.page-admin .qh-date{margin-left:auto;font-family:var(--font-mono);font-size:11px;}
+.page-admin .qh-date{margin-left:auto;font-family:var(--font-mono);font-size:11px;}/* ---------------------------------------------------- home page look tab
+   Append this block to the end of src/styles/pages/admin.css */
+.page-admin .theme-panel .setting-block{max-width:760px;}
+.page-admin .theme-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:14px;
+}
+.page-admin .theme-card{
+  position:relative;display:flex;flex-direction:column;gap:10px;align-items:flex-start;
+  background:var(--ink);border:1px solid var(--ink-line);border-radius:6px;padding:14px;
+  color:var(--bone);text-align:left;font-family:var(--font-body);cursor:pointer;
+  transition:border-color .2s,transform .2s;
+}
+.page-admin .theme-card:hover{border-color:var(--champagne-soft);transform:translateY(-1px);}
+.page-admin .theme-card.selected{border-color:var(--champagne);box-shadow:0 0 0 1px var(--champagne);}
+.page-admin .theme-swatch{display:flex;width:100%;height:26px;border-radius:4px;overflow:hidden;}
+.page-admin .theme-swatch i{flex:1;display:block;}
+.page-admin .theme-name{font-size:14.5px;font-weight:700;}
+.page-admin .theme-live,.page-admin .theme-saved{
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+}
+.page-admin .theme-live{color:#9ed4b0;}
+.page-admin .theme-saved{color:rgba(246,239,228,.5);}
+.page-admin .theme-card.live::after{
+  content:"";position:absolute;top:10px;right:10px;width:8px;height:8px;border-radius:50%;background:#9ed4b0;
+}
+.page-admin .theme-fields{margin-top:22px;display:flex;flex-direction:column;gap:6px;max-width:520px;}
+.page-admin .theme-field label{
+  display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--champagne-soft);margin:0 0 7px;
+}
+.page-admin .theme-field input{
+  width:100%;box-sizing:border-box;background:var(--ink);color:var(--bone);
+  border:1px solid var(--ink-line);border-radius:4px;padding:13px 14px;
+  font-family:var(--font-body);font-size:16px;margin:6px 0 14px;color-scheme:dark;
+}
+.page-admin .theme-field-row{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;}
+@media (max-width:560px){.page-admin .theme-field-row{grid-template-columns:1fr;}}
+.page-admin .theme-publish .field-hint b{color:var(--bone);}
+.page-admin .theme-publish-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 10px;}
+.page-admin .theme-publish-row .btn-admin{width:auto;min-width:200px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
