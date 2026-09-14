@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase, isSupabaseConfigured, signedPhotoUrl } from '../lib/supabase.js';
 import ProductsPanel from './ProductsPanel.jsx';
 import SitePanel from './SitePanel.jsx';
+import ThemePanel from './ThemePanel.jsx';
 import { isAdmin as checkIsAdmin } from '../lib/auth.js';
 import QuotePanel from './QuotePanel.jsx';
 import '../styles/pages/admin.css';
@@ -426,6 +427,12 @@ export default function Admin() {
         >
           Photos
         </button>
+        <button
+          className={tab === 'theme' ? 'active' : ''}
+          onClick={() => setTab('theme')}
+        >
+          Home page look
+        </button>
       </nav>
 
       <main className="admin-main">
@@ -446,6 +453,15 @@ export default function Admin() {
               and reorder with the arrows.
             </p>
             <ProductsPanel />
+          </>
+        ) : tab === 'theme' ? (
+          <>
+            <h1>Home page look</h1>
+            <p className="admin-lede">
+              Dress the home page for a holiday or a pop-up. Pick a look, choose
+              its photo and dates, then publish. Each look remembers its own photo.
+            </p>
+            <ThemePanel />
           </>
         ) : (
           <>
