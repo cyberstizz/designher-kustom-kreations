@@ -1,0 +1,320 @@
+/* home themes — loaded by Home.jsx alongside home.css.
+   Every theme is a data-theme value on .page-home. A theme only overrides
+   the brand tokens home.css already reads, plus the few new pieces added
+   for themes: announcement bar, hero glow + frame, particle layer, shelf
+   ribbon, pop-up event card, and the header garland. */
+
+/* ---------------------------------------------------------- new pieces */
+
+.page-home .theme-bar{
+  display:none;
+  background:var(--bar-bg, var(--ruby-deep));color:var(--bar-ink, var(--bone));
+  font-family:var(--font-mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  text-align:center;padding:10px 20px;border-bottom:1px solid rgba(0,0,0,.2);
+}
+.page-home .theme-bar b{font-weight:700;}
+.page-home .theme-bar a{margin-left:14px;text-decoration:underline;text-underline-offset:3px;}
+.page-home[data-theme]:not([data-theme="default"]) .theme-bar{display:block;}
+@media (max-width:620px){
+  .page-home .theme-bar{font-size:10.5px;letter-spacing:.08em;line-height:1.6;}
+  .page-home .theme-bar a{display:block;margin:4px 0 0;}
+}
+
+/* Themed pages tint the sticky header to their ink. */
+.page-home[data-theme]:not([data-theme="default"]) header.site-header{
+  background:color-mix(in srgb, var(--ink) 86%, transparent);
+}
+.page-home[data-theme]:not([data-theme="default"]) .mobile-nav{background:var(--ink);}
+
+/* Hero: glow behind, particle layer in front of the glow, content on top. */
+.page-home .hero::before{
+  content:"";position:absolute;inset:-120px -40vw 0;
+  background:var(--hero-glow, transparent);pointer-events:none;z-index:0;
+}
+.page-home .hero > *{position:relative;z-index:1;}
+.page-home .hero .fx{
+  position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;
+}
+.page-home .hero .fx i{position:absolute;display:block;will-change:transform,opacity;}
+
+/* Frame over the hero photo — each theme fills it. */
+.page-home .hero-media .frame{
+  position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .6s;
+}
+.page-home[data-theme]:not([data-theme="default"]) .hero-media .frame{opacity:1;}
+
+/* CTA band gradient becomes a token so themes can retint it. */
+.page-home .cta-band{
+  background:var(--band, linear-gradient(120deg,var(--ruby-deep),var(--ruby) 55%,#8f1128));
+  color:var(--band-ink, var(--bone));
+}
+.page-home .cta-band .btn-ghost{border-color:color-mix(in srgb, var(--band-ink, var(--bone)) 40%, transparent);}
+
+/* Ribbon on the first shelf card. */
+.page-home .shelf-card .ribbon{
+  display:none;position:absolute;top:16px;left:-4px;z-index:2;
+  background:var(--ruby);color:var(--bone);
+  font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  padding:6px 12px 6px 16px;
+}
+.page-home[data-theme]:not([data-theme="default"]) .shelf-card:first-child .ribbon:not(:empty){display:block;}
+
+/* Buttons on themes where the accent is light (gold) need dark text. */
+.page-home[data-theme="new-years"] .btn-primary,
+.page-home[data-theme="new-years"] .header-icons .btn-quote{color:#09080B;}
+.page-home[data-theme="new-years"] .cta-band .btn-primary{color:var(--bone);}
+
+/* ----------------------------------------------------------- Christmas */
+.page-home[data-theme="christmas"]{
+  --ink:#0C1F18;--ink-soft:#12291F;--ink-line:rgba(246,239,228,.16);
+  --ruby:#B0142F;--ruby-bright:#E0203F;--ruby-deep:#6E0E20;
+  --champagne:#D9B45E;--champagne-soft:#F0D890;
+  --hero-glow:radial-gradient(60% 55% at 70% 20%,rgba(217,180,94,.16),transparent 70%);
+  --band:linear-gradient(120deg,#6E0E20,#B0142F 55%,#0C1F18);
+}
+.page-home[data-theme="christmas"] .marquee-strip{
+  border-image:repeating-linear-gradient(90deg,var(--ruby) 0 40px,var(--bone) 40px 80px) 1;
+  border-width:2px 0;border-style:solid;
+}
+.page-home[data-theme="christmas"] .hero-media .frame{
+  box-shadow:inset 0 0 0 1px var(--champagne-soft),inset 0 0 0 6px var(--ink),inset 0 0 0 7px rgba(217,180,94,.4);
+  border-radius:6px;
+}
+.page-home[data-theme="christmas"] .hero-badge{color:var(--champagne-soft);border-color:rgba(217,180,94,.5);}
+
+/* Garland over the wordmark (SiteHeader renders it when theme is christmas). */
+.page-home .wordmark{position:relative;}
+.page-home .wordmark .garland{
+  position:absolute;left:-10px;top:-13px;width:calc(100% + 24px);height:22px;
+  pointer-events:none;overflow:visible;
+}
+.page-home .wordmark .garland .light{animation:garlandTwinkle 2.4s ease-in-out infinite;}
+.page-home .wordmark .garland .light:nth-child(odd){animation-delay:-1.2s;}
+.page-home .wordmark .garland .light:nth-child(3n){animation-delay:-.6s;animation-duration:3.1s;}
+@keyframes garlandTwinkle{0%,100%{opacity:.45;}50%{opacity:1;}}
+
+/* ----------------------------------------------------------- Halloween */
+.page-home[data-theme="halloween"]{
+  --ink:#0E0A14;--ink-soft:#17101F;--ink-line:rgba(246,239,228,.13);
+  --ruby:#E06A15;--ruby-bright:#FF8A2A;--ruby-deep:#8F4210;
+  --champagne:#C9A0FF;--champagne-soft:#DFC6FF;
+  --hero-glow:radial-gradient(55% 60% at 75% 30%,rgba(224,106,21,.22),transparent 70%),
+              radial-gradient(40% 40% at 20% 90%,rgba(110,63,163,.28),transparent 70%);
+  --band:linear-gradient(120deg,#2A1240,#6E3FA3 50%,#E06A15);
+}
+.page-home[data-theme="halloween"] .hero h1 em{color:#FF8A2A;text-shadow:0 0 22px rgba(255,138,42,.45);}
+.page-home[data-theme="halloween"] .hero-media .frame{background:radial-gradient(90% 60% at 50% 110%,rgba(224,106,21,.35),transparent 60%);}
+.page-home[data-theme="halloween"] .hero-badge{border-color:rgba(255,138,42,.5);color:#FFC58F;}
+
+/* -------------------------------------------------------- Mother's Day */
+.page-home[data-theme="mothers-day"]{
+  --ink:#1E1219;--ink-soft:#2A1A24;--ink-line:rgba(246,239,228,.15);
+  --ruby:#C94A78;--ruby-bright:#E86A97;--ruby-deep:#8A2E52;
+  --champagne:#D8B27A;--champagne-soft:#F0D8AE;
+  --hero-glow:radial-gradient(55% 55% at 70% 20%,rgba(232,106,151,.2),transparent 70%);
+  --band:linear-gradient(120deg,#8A2E52,#C94A78 55%,#F0B6C8);
+}
+.page-home[data-theme="mothers-day"] .hero-media .frame{
+  box-shadow:inset 0 0 0 1px rgba(232,106,151,.55),inset 0 0 0 10px var(--ink);border-radius:6px;
+}
+.page-home[data-theme="mothers-day"] .about{background:#F9EDEF;}
+
+/* ---------------------------------------------------------- Valentine's */
+.page-home[data-theme="valentines"]{
+  --ink:#200712;--ink-soft:#2C0C1A;--ink-line:rgba(246,239,228,.15);
+  --ruby:#D81C40;--ruby-bright:#FF3D63;--ruby-deep:#8A0F2B;
+  --champagne:#E7B4C0;--champagne-soft:#F6D6DD;
+  --hero-glow:radial-gradient(60% 60% at 65% 25%,rgba(255,61,99,.24),transparent 70%);
+  --band:linear-gradient(120deg,#8A0F2B,#D81C40 55%,#FF7A94);
+}
+.page-home[data-theme="valentines"] .hero h1 em{color:#FF3D63;}
+.page-home[data-theme="valentines"] .hero-media .frame{box-shadow:inset 0 0 0 1px rgba(255,61,99,.6);border-radius:6px;}
+
+/* --------------------------------------------------------- 4th of July */
+.page-home[data-theme="july-4"]{
+  --ink:#0C1330;--ink-soft:#131C3F;--ink-line:rgba(246,239,228,.16);
+  --ruby:#C8102E;--ruby-bright:#E8264A;--ruby-deep:#8A0B20;
+  --champagne:#EDEFF2;--champagne-soft:#FFFFFF;
+  --hero-glow:radial-gradient(60% 55% at 70% 15%,rgba(237,239,242,.14),transparent 70%);
+  --band:linear-gradient(120deg,#8A0B20,#C8102E 50%,#0C1330);
+}
+.page-home[data-theme="july-4"] .hero-rule{background:linear-gradient(90deg,#C8102E 0 33%,#FFFFFF 33% 66%,#3D5AFE 66%);}
+.page-home[data-theme="july-4"] .marquee-strip{
+  border-image:linear-gradient(90deg,#C8102E,#FFFFFF,#3D5AFE) 1;border-width:2px 0;border-style:solid;
+}
+.page-home[data-theme="july-4"] .hero-media .frame{
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.5),inset 0 0 0 5px var(--ink),inset 0 0 0 6px #C8102E;border-radius:6px;
+}
+
+/* ---------------------------------------------------------- Juneteenth */
+.page-home[data-theme="juneteenth"]{
+  --ink:#0B0B0D;--ink-soft:#151517;--ink-line:rgba(246,239,228,.15);
+  --ruby:#C8102E;--ruby-bright:#E8264A;--ruby-deep:#8A0B20;
+  --champagne:#E4B93C;--champagne-soft:#F3D678;
+  --hero-glow:radial-gradient(60% 55% at 70% 15%,rgba(228,185,60,.16),transparent 70%),
+              radial-gradient(45% 45% at 15% 95%,rgba(0,121,64,.28),transparent 70%);
+  --band:linear-gradient(120deg,#C8102E 0 40%,#0B0B0D 40% 60%,#007940 60%);
+}
+.page-home[data-theme="juneteenth"] .hero-rule{
+  background:linear-gradient(90deg,#C8102E 0 33%,#0B0B0D 33% 66%,#007940 66%);
+  box-shadow:0 0 0 1px rgba(246,239,228,.2);
+}
+.page-home[data-theme="juneteenth"] .marquee-strip{
+  border-image:linear-gradient(90deg,#C8102E 0 33%,#E4B93C 33% 66%,#007940 66%) 1;border-width:2px 0;border-style:solid;
+}
+.page-home[data-theme="juneteenth"] .hero-media .frame{box-shadow:inset 0 0 0 1px rgba(228,185,60,.6);border-radius:6px;}
+
+/* -------------------------------------------------------------- Pop-up */
+.page-home[data-theme="popup"]{
+  --ruby:#D81C40;--ruby-bright:#FF3D63;--ruby-deep:#7C0F23;
+  --hero-glow:radial-gradient(60% 55% at 70% 20%,rgba(216,28,64,.22),transparent 70%);
+  --band:linear-gradient(120deg,#7C0F23,#D81C40 55%,#CBA35C);
+  --bar-bg:#FF3D63;--bar-ink:#150F1A;
+}
+.page-home[data-theme="popup"] .marquee-track{animation-duration:14s;}
+.page-home[data-theme="popup"] .marquee-track span{color:var(--champagne-soft);}
+.page-home[data-theme="popup"] .hero-media .frame{
+  box-shadow:inset 0 0 0 2px var(--champagne);border-radius:6px;
+  -webkit-mask:
+    radial-gradient(circle at 0 50%,transparent 14px,#000 15px) left/50% 100% no-repeat,
+    radial-gradient(circle at 100% 50%,transparent 14px,#000 15px) right/50% 100% no-repeat;
+  mask:
+    radial-gradient(circle at 0 50%,transparent 14px,#000 15px) left/50% 100% no-repeat,
+    radial-gradient(circle at 100% 50%,transparent 14px,#000 15px) right/50% 100% no-repeat;
+}
+.page-home[data-theme="popup"] .hero-stats div b{color:var(--ruby-bright);}
+.page-home[data-theme="popup"] .hero-badge{display:none;}
+.page-home[data-theme="popup"] .hero-media::after{
+  background:linear-gradient(180deg,rgba(21,15,26,0) 25%,rgba(21,15,26,.85) 100%);
+}
+
+.page-home .event-card{
+  position:absolute;left:18px;right:18px;bottom:18px;z-index:3;
+  background:rgba(21,15,26,.82);backdrop-filter:blur(10px);
+  border:1px solid var(--ink-line);border-radius:6px;padding:20px 22px;
+}
+.page-home .event-card .ek{
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--champagne-soft);display:flex;align-items:center;gap:10px;margin-bottom:8px;
+}
+.page-home .event-card .ek::before{
+  content:"";width:8px;height:8px;border-radius:50%;background:var(--ruby-bright);
+  animation:eventPing 1.8s ease-out infinite;
+}
+@keyframes eventPing{
+  0%{box-shadow:0 0 0 0 rgba(255,61,99,.7);}
+  100%{box-shadow:0 0 0 12px transparent;}
+}
+.page-home .event-card h3{font-family:var(--font-display);font-weight:500;font-size:24px;margin:0 0 4px;line-height:1.1;}
+.page-home .event-card .ed{font-size:13.5px;color:rgba(246,239,228,.8);margin:0 0 14px;}
+.page-home .countdown{display:flex;gap:14px;}
+.page-home .countdown div{
+  text-align:center;background:rgba(246,239,228,.06);border:1px solid var(--ink-line);
+  border-radius:4px;padding:8px 0;min-width:58px;
+}
+.page-home .countdown b{
+  font-family:var(--font-display);font-size:24px;font-weight:500;display:block;line-height:1;
+  font-variant-numeric:tabular-nums;
+}
+.page-home .countdown span{
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  color:rgba(246,239,228,.55);
+}
+.page-home .countdown .live{
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ruby-bright);
+}
+@media (max-width:560px){
+  .page-home .event-card{left:12px;right:12px;bottom:12px;padding:16px;}
+  .page-home .countdown{gap:8px;}
+  .page-home .countdown div{min-width:48px;}
+  .page-home .event-card h3{font-size:20px;}
+}
+
+/* ----------------------------------------------------------- New Year's */
+.page-home[data-theme="new-years"]{
+  --ink:#09080B;--ink-soft:#141217;--ink-line:rgba(246,239,228,.16);
+  --ruby:#B89446;--ruby-bright:#E0BC63;--ruby-deep:#7D6127;
+  --champagne:#E0BC63;--champagne-soft:#F4E2A6;
+  --hero-glow:radial-gradient(60% 55% at 70% 15%,rgba(224,188,99,.2),transparent 70%);
+  --band:linear-gradient(120deg,#09080B,#3A2E12 55%,#E0BC63);
+}
+.page-home[data-theme="new-years"] .hero h1 em{color:#E0BC63;}
+.page-home[data-theme="new-years"] .hero-media .frame{
+  box-shadow:inset 0 0 0 1px rgba(224,188,99,.7),inset 0 0 0 8px var(--ink),inset 0 0 0 9px rgba(224,188,99,.3);
+  border-radius:6px;
+}
+
+/* ------------------------------------------------------------ particles */
+@keyframes fxFall{0%{transform:translate3d(0,-6vh,0) rotate(0);}100%{transform:translate3d(var(--dx),108vh,0) rotate(var(--rot));}}
+@keyframes fxRise{0%{transform:translate3d(0,0,0) scale(var(--s));opacity:0;}15%{opacity:var(--o);}100%{transform:translate3d(var(--dx),-110vh,0) scale(var(--s));opacity:0;}}
+@keyframes fxTwinkle{0%,100%{opacity:.15;transform:scale(.7);}50%{opacity:1;transform:scale(1.15);}}
+@keyframes fxBurst{0%{transform:scale(0);opacity:0;}8%{opacity:1;}40%{transform:scale(1);opacity:.9;}100%{transform:scale(1.25);opacity:0;}}
+@keyframes fxFlap{0%,100%{transform:translate3d(0,0,0) scaleY(1);}50%{transform:translate3d(var(--dx),var(--dy),0) scaleY(.7);}}
+
+.page-home .fx .snow{
+  width:var(--w);height:var(--w);border-radius:50%;background:rgba(246,239,228,.85);
+  box-shadow:0 0 6px rgba(246,239,228,.6);top:-10px;left:var(--x);
+  animation:fxFall var(--d) linear infinite var(--delay);opacity:var(--o);
+}
+.page-home .fx .petal{
+  width:var(--w);height:calc(var(--w)*.6);border-radius:70% 0 70% 0;
+  background:linear-gradient(135deg,#F7C6D6,#E86A97);top:-20px;left:var(--x);
+  animation:fxFall var(--d) ease-in-out infinite var(--delay);opacity:var(--o);
+}
+.page-home .fx .heart{
+  width:var(--w);height:var(--w);left:var(--x);bottom:-20px;background:#FF3D63;
+  transform:rotate(45deg);animation:fxRise var(--d) ease-out infinite var(--delay);border-radius:0 0 2px 0;
+}
+.page-home .fx .heart::before,.page-home .fx .heart::after{
+  content:"";position:absolute;width:100%;height:100%;background:inherit;border-radius:50%;
+}
+.page-home .fx .heart::before{left:-50%;top:0;}
+.page-home .fx .heart::after{top:-50%;left:0;}
+.page-home .fx .ember{
+  width:var(--w);height:var(--w);border-radius:50%;
+  background:radial-gradient(circle,#FFC58F,#FF8A2A 60%,transparent 70%);
+  left:var(--x);bottom:-10px;animation:fxRise var(--d) ease-out infinite var(--delay);
+}
+.page-home .fx .bat{
+  left:var(--x);top:var(--y);width:26px;height:14px;opacity:.75;
+  animation:fxFlap var(--d) ease-in-out infinite var(--delay);
+}
+.page-home .fx .bat::before,.page-home .fx .bat::after{
+  content:"";position:absolute;top:0;width:13px;height:14px;background:#8B5CC7;border-radius:60% 60% 0 0;
+}
+.page-home .fx .bat::before{left:0;clip-path:polygon(0 60%,50% 0,100% 40%,100% 100%,70% 80%,40% 100%,0 100%);}
+.page-home .fx .bat::after{right:0;clip-path:polygon(0 40%,50% 0,100% 60%,100% 100%,60% 100%,30% 80%,0 100%);}
+.page-home .fx .star{
+  left:var(--x);top:var(--y);width:var(--w);height:var(--w);background:var(--champagne);
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+  animation:fxTwinkle var(--d) ease-in-out infinite var(--delay);
+}
+.page-home .fx .spark{
+  left:var(--x);top:var(--y);width:var(--w);height:var(--w);border-radius:50%;
+  background:radial-gradient(circle,var(--c) 0 12%,transparent 13%),
+             repeating-conic-gradient(from 0deg,var(--c) 0 3deg,transparent 3deg 30deg);
+  -webkit-mask:radial-gradient(circle,transparent 20%,#000 22%,#000 48%,transparent 50%);
+  mask:radial-gradient(circle,transparent 20%,#000 22%,#000 48%,transparent 50%);
+  opacity:0;animation:fxBurst var(--d) ease-out infinite var(--delay);
+}
+.page-home .fx .bubble{
+  left:var(--x);bottom:-12px;width:var(--w);height:var(--w);border-radius:50%;
+  border:1px solid rgba(244,226,166,.6);
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.5),transparent 50%);
+  animation:fxRise var(--d) ease-in infinite var(--delay);
+}
+.page-home .fx .confetti{
+  left:var(--x);top:-12px;width:var(--w);height:calc(var(--w)*.45);background:var(--c);
+  animation:fxFall var(--d) linear infinite var(--delay);opacity:.9;
+}
+.page-home .fx .pin{
+  left:var(--x);top:var(--y);width:10px;height:10px;border-radius:50%;background:var(--ruby-bright);
+  opacity:.7;animation:fxTwinkle var(--d) ease-in-out infinite var(--delay);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .page-home .fx{display:none;}
+  .page-home .wordmark .garland .light{animation:none;}
+  .page-home .event-card .ek::before{animation:none;}
+}

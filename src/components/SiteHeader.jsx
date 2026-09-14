@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import Garland from './Garland.jsx';
 
 /**
  * Site header. One nav for the whole site.
@@ -7,8 +8,12 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
  * Below 900px the links collapse into a menu behind a button. The prototype
  * simply hid the nav at mobile widths, which left phone visitors with no way
  * to reach any page — this replaces that.
+ *
+ * Props (all optional, only the home page passes them):
+ *   theme    — resolved theme from src/lib/themes.js. 'christmas' hangs the
+ *              garland over the wordmark; any theme can relabel the CTA.
  */
-export default function SiteHeader() {
+export default function SiteHeader({ theme = null }) {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
 
@@ -43,10 +48,15 @@ export default function SiteHeader() {
 
   const signInLink = <NavLink to="/account">Sign in</NavLink>;
 
+  const ctaLabel = theme?.headerCta || 'Start a Kreation';
+  const ctaIsExternal = theme?.key === 'popup';
+  const ctaTo = ctaIsExternal ? theme.cta1To : '/custom';
+
   return (
     <header className="site-header">
       <div className="header-inner">
         <Link to="/" className="wordmark">
+          {theme?.key === 'christmas' && <Garland />}
           <span className="script">Designher</span>
           <span className="tag">CUSTOM KREATIONS</span>
         </Link>
@@ -60,9 +70,15 @@ export default function SiteHeader() {
             Sign in
           </Link>
 
-          <Link to="/custom" className="btn-quote">
-            Start a Kreation
-          </Link>
+          {ctaIsExternal ? (
+            <a href={ctaTo} className="btn-quote" target="_blank" rel="noopener noreferrer">
+              {ctaLabel}
+            </a>
+          ) : (
+            <Link to={ctaTo} className="btn-quote">
+              {ctaLabel}
+            </Link>
+          )}
 
           <button
             type="button"
