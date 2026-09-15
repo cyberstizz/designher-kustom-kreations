@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase.js';
 import { signOut } from '../lib/auth.js';
 import { fetchRequest, displayStatus } from '../lib/account.js';
 import { formatMoney, respondToQuote, sendMessage } from '../lib/quotes.js';
+import { fetchPayments, paidPayment, startCheckout } from '../lib/payments.js';
 import SignIn from './SignIn.jsx';
 import '../styles/pages/account.css';
 
@@ -34,7 +35,13 @@ export default function RequestDetail() {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState('');
   const [reply, setReply] = useState('');
+  const [payment, setPayment] = useState(null);
   const replyRef = useRef(null);
+
+  // Stripe sends the customer back here with ?paid=1. The webhook is what
+  // actually records the payment, so this only decides what to say while the
+  // row catches up.
+  const justReturned = new URLSearchParams(window.location.search).get('paid');
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -53,6 +60,8 @@ export default function RequestDetail() {
     const { data, error } = await fetchRequest(id);
     if (error) setError(error.message);
     else setRequest(data);
+    const { data: payments } = await fetchPayments(id);
+    setPayment(paidPayment(payments));
     setLoading(false);
   }
 
@@ -64,6 +73,9 @@ export default function RequestDetail() {
       if (cancelled) return;
       if (error) setError(error.message);
       else setRequest(data);
+      const { data: payments } = await fetchPayments(id);
+      if (cancelled) return;
+      setPayment(paidPayment(payments));
       setLoading(false);
     })();
     return () => {
@@ -78,6 +90,17 @@ export default function RequestDetail() {
     setBusy('');
     if (error) setError(error.message);
     else load();
+  }
+
+  async function handlePay() {
+    setBusy('pay');
+    setError('');
+    const { error } = await startCheckout(id);
+    // On success the browser has already left for Stripe.
+    if (error) {
+      setError(error.message);
+      setBusy('');
+    }
   }
 
   async function handleSend() {
@@ -129,6 +152,7 @@ export default function RequestDetail() {
 
   const q = request.quote;
   const accepted = q?.status === 'accepted';
+  const paid = Boolean(payment);
   const status = displayStatus(request);
 
   return (
@@ -173,13 +197,26 @@ export default function RequestDetail() {
                   <p className="pb-amount">{formatMoney(q.amount_cents)}</p>
                 </div>
                 <p className="pb-note">
-                  {accepted ? 'Accepted — Dianna will be in touch' : 'Full payment when you accept'}
+                  {paid
+                    ? 'Paid in full — Dianna has started your kreation'
+                    : accepted
+                      ? 'Pay in full to start your kreation'
+                      : 'Full payment when you accept'}
                 </p>
               </div>
 
               {error && <p className="account-error">{error}</p>}
 
               <div className="detail-actions">
+                {accepted && !paid && (
+                  <button className="btn-account solid" onClick={handlePay} disabled={busy === 'pay'}>
+                    <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                      <path d="M3 10h18" fill="none" stroke="currentColor" strokeWidth="1.6" />
+                    </svg>
+                    {busy === 'pay' ? 'Opening checkout…' : `Pay ${formatMoney(q.amount_cents)}`}
+                  </button>
+                )}
                 {!accepted && (
                   <button className="btn-account solid" onClick={handleAccept} disabled={busy === 'accept'}>
                     <svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true">
@@ -200,10 +237,29 @@ export default function RequestDetail() {
                 </button>
               </div>
 
-              {accepted && (
+              {paid && (
+                <p className="account-paid">
+                  Paid {new Date(payment.paid_at).toLocaleDateString(undefined, { day: 'numeric', month: 'long' })}
+                  {payment.receipt_url && (
+                    <>
+                      {' · '}
+                      <a href={payment.receipt_url} target="_blank" rel="noopener noreferrer">
+                        View receipt
+                      </a>
+                    </>
+                  )}
+                </p>
+              )}
+
+              {!paid && justReturned === '1' && (
                 <p className="account-hint">
-                  Payment isn't set up on the website yet — Dianna will send you the details
-                  directly.
+                  Thanks — your payment is going through. This page updates within a minute.
+                </p>
+              )}
+
+              {accepted && !paid && (
+                <p className="account-hint">
+                  Payment is handled by Stripe. Card details never touch this website.
                 </p>
               )}
             </>
