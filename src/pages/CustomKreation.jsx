@@ -1,12 +1,28 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/pages/custom.css';
 import init from './scripts/custom.js';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
+import OrdersPausedNotice from '../components/OrdersPausedNotice.jsx';
+import { fetchOrderBook } from '../lib/settings.js';
 
 export default function CustomKreation() {
-  useEffect(() => init(), []);
+  // null while we're still asking. The form stays hidden until we know, so a
+  // visitor never starts filling in a wizard that's about to disappear.
+  const [book, setBook] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchOrderBook().then((b) => { if (!cancelled) setBook(b); });
+    return () => { cancelled = true; };
+  }, []);
+
+  // The wizard is a ported DOM script, so it can only be initialised once the
+  // form is actually on the page.
+  useEffect(() => {
+    if (book && !book.paused) init();
+  }, [book]);
 
   return (
     <div className="page-custom">
@@ -80,9 +96,20 @@ export default function CustomKreation() {
             <em>dreaming up.</em>
           </h1>
           <p>
-            Every kreation starts with a conversation, not a checkout button. Answer a few questions and you'll get a personal quote and mockup before anything's set in stone.
+            {book?.paused
+              ? 'New custom requests are on hold while Dianna finishes the kreations already on her table.'
+              : "Every kreation starts with a conversation, not a checkout button. Answer a few questions and you'll get a personal quote and mockup before anything's set in stone."}
           </p>
         </div>
+
+        {book === null && <p className="custom-loading">One moment…</p>}
+
+        {book?.paused && (
+          <OrdersPausedNotice variant="panel" reopen={book.reopen} note={book.note} />
+        )}
+
+        {book && !book.paused && (
+        <>
         <div className="tracker" id="tracker">
           <div className="tracker-step active" data-step="1">
             <div className="dot">1</div>
@@ -305,6 +332,9 @@ export default function CustomKreation() {
           </p>
           <Link to="/" className="btn btn-ghost">Back to Home</Link>
         </div>
+        </>
+        )}
+
         <section className="section">
           <div className="wrap process-wrap">
             <div className="section-head">
