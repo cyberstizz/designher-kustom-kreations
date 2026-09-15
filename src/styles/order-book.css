@@ -1,0 +1,112 @@
+/* Order book — the paused state and the admin switch.
+   Imported once from src/main.jsx, after global.css, because these pieces
+   appear on the home page, the custom page, the account page and the admin. */
+
+/* --------------------------------------------- the bar on the home page */
+.orders-paused-bar{
+  background:var(--ink-soft);
+  color:var(--bone);
+  border-bottom:1px solid var(--ink-line);
+  border-top:2px solid var(--champagne);
+  font-family:var(--font-mono);
+  font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;
+  text-align:center;padding:11px 20px;
+}
+.orders-paused-bar b{font-weight:700;color:var(--champagne-soft);}
+.orders-paused-bar a{
+  margin-left:14px;text-decoration:underline;text-underline-offset:3px;
+}
+@media (max-width:620px){
+  .orders-paused-bar{font-size:10.5px;letter-spacing:.08em;line-height:1.7;}
+  .orders-paused-bar a{display:block;margin:4px 0 0;}
+}
+
+/* ------------------------------------- the panel that replaces the form */
+.orders-paused-panel{
+  max-width:640px;margin:8px auto 72px;padding:44px 34px;
+  background:var(--ink-soft);
+  border:1px solid var(--ink-line);border-radius:8px;
+  text-align:center;
+}
+.orders-paused-panel .opp-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:52px;height:52px;border-radius:50%;
+  border:1px solid var(--ink-line);color:var(--champagne);
+  margin-bottom:22px;
+}
+.orders-paused-panel h2{
+  font-family:var(--font-display);font-weight:500;
+  font-size:clamp(25px,3.4vw,33px);line-height:1.14;margin:0 0 16px;
+}
+.orders-paused-panel .opp-lede{
+  font-size:15.5px;line-height:1.7;color:rgba(246,239,228,.78);
+  max-width:460px;margin:0 auto 18px;
+}
+.orders-paused-panel .opp-when{
+  font-family:var(--font-mono);font-size:12px;letter-spacing:.08em;
+  color:var(--champagne-soft);margin:0 0 28px;
+}
+.orders-paused-panel .opp-actions{
+  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:26px;
+}
+.orders-paused-panel .opp-foot{
+  font-size:13px;line-height:1.7;color:rgba(246,239,228,.55);
+  padding-top:22px;border-top:1px solid var(--ink-line);margin:0;
+}
+.orders-paused-panel .opp-foot a{color:var(--bone);text-decoration:underline;text-underline-offset:3px;}
+.page-custom .custom-loading{
+  text-align:center;color:rgba(246,239,228,.5);font-size:14px;padding:40px 0 80px;
+}
+@media (max-width:560px){
+  .orders-paused-panel{margin-left:16px;margin-right:16px;padding:32px 22px;}
+  .orders-paused-panel .opp-actions .btn{width:100%;justify-content:center;}
+}
+
+/* ----------------------------------------------- the switch in the admin */
+.page-admin .orders-toggle{display:flex;align-items:center;gap:12px;position:relative;}
+.page-admin .ot-state{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:#9ed4b0;white-space:nowrap;
+}
+.page-admin .ot-state i{
+  width:8px;height:8px;border-radius:50%;background:#9ed4b0;display:block;
+}
+.page-admin .ot-state.paused{color:#ff9aa8;}
+.page-admin .ot-state.paused i{background:#ff9aa8;}
+.page-admin .orders-toggle .btn-admin{width:auto;min-height:38px;white-space:nowrap;}
+.page-admin .ot-resume{background:#2f7d50;}
+.page-admin .ot-resume:hover:not(:disabled){background:#379059;}
+
+.page-admin .ot-sheet{
+  position:absolute;top:calc(100% + 12px);right:0;z-index:60;width:min(380px,calc(100vw - 32px));
+  background:var(--ink-soft);border:1px solid var(--ink-line);border-radius:8px;
+  padding:22px;box-shadow:0 24px 60px -24px rgba(0,0,0,.85);text-align:left;
+}
+.page-admin .ot-sheet h3{
+  font-family:var(--font-display);font-weight:500;font-size:21px;margin:0 0 10px;
+}
+.page-admin .ot-sheet p{font-size:13.5px;line-height:1.65;color:rgba(246,239,228,.72);margin:0 0 18px;}
+.page-admin .ot-sheet label{
+  display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--champagne-soft);margin:0 0 7px;
+}
+.page-admin .ot-sheet input{
+  width:100%;box-sizing:border-box;background:var(--ink);color:var(--bone);
+  border:1px solid var(--ink-line);border-radius:4px;padding:12px 13px;
+  font-family:var(--font-body);font-size:16px;margin:0 0 6px;color-scheme:dark;
+}
+.page-admin .ot-sheet .ot-hint{font-size:12px;margin:0 0 16px;color:rgba(246,239,228,.45);}
+.page-admin .ot-sheet-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+.page-admin .ot-sheet-actions .btn-admin{width:auto;flex:1;min-width:130px;}
+@media (max-width:620px){
+  .page-admin .orders-toggle .ot-state{display:none;}
+  .page-admin .ot-sheet{position:fixed;left:16px;right:16px;top:auto;bottom:16px;width:auto;}
+}
+
+/* ------------------------------------------------- paid state on account */
+.page-account .account-paid{
+  margin:16px 0 0;padding:11px 14px;border-radius:4px;font-size:13.5px;
+  background:rgba(120,180,140,.14);border:1px solid rgba(120,180,140,.4);color:#9ed4b0;
+}
+.page-account .account-paid a{color:inherit;text-decoration:underline;text-underline-offset:3px;}
