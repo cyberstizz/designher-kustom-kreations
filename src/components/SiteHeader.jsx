@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import Garland from './Garland.jsx';
+import { fetchOrderBook } from '../lib/settings.js';
 
 /**
  * Site header. One nav for the whole site.
@@ -15,7 +16,16 @@ import Garland from './Garland.jsx';
  */
 export default function SiteHeader({ theme = null }) {
   const [open, setOpen] = useState(false);
+  // When Dianna pauses new orders the header button would be a dead end, so
+  // it points at the shop instead. Cached, so it's one request per visit.
+  const [paused, setPaused] = useState(false);
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchOrderBook().then((b) => { if (!cancelled) setPaused(b.paused); });
+    return () => { cancelled = true; };
+  }, []);
 
   // Close the menu whenever the route changes, otherwise it stays open
   // over the new page after a tap.
@@ -48,9 +58,9 @@ export default function SiteHeader({ theme = null }) {
 
   const signInLink = <NavLink to="/account">Sign in</NavLink>;
 
-  const ctaLabel = theme?.headerCta || 'Start a Kreation';
-  const ctaIsExternal = theme?.key === 'popup';
-  const ctaTo = ctaIsExternal ? theme.cta1To : '/custom';
+  const ctaLabel = paused ? 'Shop Ready-Made' : (theme?.headerCta || 'Start a Kreation');
+  const ctaIsExternal = !paused && theme?.key === 'popup';
+  const ctaTo = paused ? '/shop' : (ctaIsExternal ? theme.cta1To : '/custom');
 
   return (
     <header className="site-header">

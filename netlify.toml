@@ -2,8 +2,12 @@
   command = "npm run build"
   publish = "dist"
 
+[functions]
+  node_bundler = "esbuild"
+  directory = "netlify/functions"
+
 # Single-page app: every URL must serve index.html so React Router can handle
-# it. Without this, loading /shop directly (or refreshing on it) 404s.
+# it. Functions are matched before this, so /.netlify/functions/* still works.
 [[redirects]]
   from = "/*"
   to = "/index.html"

@@ -9,11 +9,16 @@ const REST_URL = import.meta.env.VITE_SUPABASE_URL;
 const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const isConfigured = Boolean(REST_URL && ANON_KEY);
 
-/** Built-in images used until Dianna uploads her own. */
+/** Built-in values used until Dianna sets her own. */
 export const DEFAULTS = {
   hero_image_url: '/images/kreation-01.jpg',
   hero_badge: 'No. 001 — "Sapphire Row" Converse',
   founder_photo_url: '/images/DiannaBeatyPic.jpg',
+  // Order book. 'true' closes new custom requests site-wide; the database
+  // enforces it too (supabase/008_orders_paused.sql).
+  orders_paused: 'false',
+  orders_reopen_date: '',
+  orders_paused_note: '',
 };
 
 /**
@@ -78,4 +83,45 @@ export async function uploadSiteImage(file) {
   if (error) return { url: null, error };
   const { data } = supabase.storage.from('product-images').getPublicUrl(path);
   return { url: data.publicUrl, error: null };
+}
+/* ----------------------------------------------------------- order book */
+
+/** True when Dianna has paused new custom orders. */
+export function ordersPaused(settings) {
+  return settings?.orders_paused === 'true';
+}
+
+/**
+ * "Back open March 3" style line, or null when she gave no date.
+ * Parsed as a local date so it doesn't slip a day in western time zones.
+ */
+export function reopenPhrase(settings) {
+  const raw = settings?.orders_reopen_date;
+  if (!raw) return null;
+  const [y, m, d] = raw.split('-').map(Number);
+  if (!y || !m || !d) return null;
+  const date = new Date(y, m - 1, d);
+  if (date < new Date(new Date().toDateString())) return null; // date already passed
+  return date.toLocaleDateString(undefined, { month: 'long', day: 'numeric' });
+}
+
+/**
+ * Cached read of just the order-book state, for chrome that renders on every
+ * page (the header). One request per page load, shared by every caller.
+ */
+let bookPromise = null;
+export function fetchOrderBook() {
+  if (!bookPromise) {
+    bookPromise = fetchSettings().then((s) => ({
+      paused: ordersPaused(s),
+      reopen: reopenPhrase(s),
+      note: s.orders_paused_note || '',
+    }));
+  }
+  return bookPromise;
+}
+
+/** Call after saving, so the next read isn't stale. */
+export function clearOrderBookCache() {
+  bookPromise = null;
 }
