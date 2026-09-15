@@ -7,7 +7,8 @@ import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
 import ThemeFx from '../components/ThemeFx.jsx';
 import { categoryLabel, fetchPublishedProducts } from '../lib/products.js';
-import { DEFAULTS, fetchSettings } from '../lib/settings.js';
+import { DEFAULTS, fetchSettings, ordersPaused, reopenPhrase } from '../lib/settings.js';
+import OrdersPausedNotice from '../components/OrdersPausedNotice.jsx';
 import { THEMES, fetchActiveThemeKey, fetchThemeRows, resolveTheme } from '../lib/themes.js';
 
 /** Live countdown for the pop-up card. Shows "Happening now" once it starts. */
@@ -97,6 +98,8 @@ export default function Home() {
   }, []);
 
   const t = theme;
+  const paused = ordersPaused(site);
+  const reopen = reopenPhrase(site);
   const [h1a, h1b, h1c] = t.h1;
   const [bandA, bandB] = t.bandH2;
 
@@ -114,7 +117,9 @@ export default function Home() {
 
       <SiteHeader theme={t} />
 
-      {t.bar && (
+      {paused && <OrdersPausedNotice variant="bar" reopen={reopen} />}
+
+      {!paused && t.bar && (
         <div className="theme-bar">
           <b>{t.bar.text}</b> · {t.bar.detail}
           {t.bar.external ? (
@@ -144,8 +149,17 @@ export default function Home() {
             <div className="hero-rule"></div>
             <p className="lede">{t.lede}</p>
             <div className="hero-ctas">
-              <Cta to={t.cta1To} className="btn btn-primary">{t.cta1}</Cta>
-              <Cta to={t.cta2To} className="btn btn-ghost">{t.cta2}</Cta>
+              {paused ? (
+                <>
+                  <Link to="/shop" className="btn btn-primary">Shop ready-made</Link>
+                  <Link to="/custom" className="btn btn-ghost">When orders reopen</Link>
+                </>
+              ) : (
+                <>
+                  <Cta to={t.cta1To} className="btn btn-primary">{t.cta1}</Cta>
+                  <Cta to={t.cta2To} className="btn btn-ghost">{t.cta2}</Cta>
+                </>
+              )}
             </div>
             <div className="hero-stats">
               {t.stats.map(([b, s]) => (
@@ -346,16 +360,25 @@ export default function Home() {
           <div className="wrap">
             <span className="eyebrow">
               <Gem color="currentColor" />
-              {t.bandEye}
+              {paused ? 'Back soon' : t.bandEye}
             </span>
             <h2>
-              {bandA}
+              {paused ? 'The book is closed,' : bandA}
               <br />
-              {bandB}
+              {paused ? 'but the shop is open.' : bandB}
             </h2>
             <div className="hero-ctas">
-              <Link to={t.band1To} className="btn btn-primary">{t.band1}</Link>
-              <Link to={t.band2To} className="btn btn-ghost">{t.band2}</Link>
+              {paused ? (
+                <>
+                  <Link to="/shop" className="btn btn-primary">Browse the shop</Link>
+                  <Link to="/custom" className="btn btn-ghost">When orders reopen</Link>
+                </>
+              ) : (
+                <>
+                  <Link to={t.band1To} className="btn btn-primary">{t.band1}</Link>
+                  <Link to={t.band2To} className="btn btn-ghost">{t.band2}</Link>
+                </>
+              )}
             </div>
           </div>
         </section>
