@@ -4,6 +4,7 @@ import { supabase, isSupabaseConfigured, signedPhotoUrl } from '../lib/supabase.
 import ProductsPanel from './ProductsPanel.jsx';
 import SitePanel from './SitePanel.jsx';
 import ThemePanel from './ThemePanel.jsx';
+import OrdersToggle from '../components/OrdersToggle.jsx';
 import { isAdmin as checkIsAdmin } from '../lib/auth.js';
 import QuotePanel from './QuotePanel.jsx';
 import '../styles/pages/admin.css';
@@ -401,6 +402,7 @@ export default function Admin() {
           <span className="admin-tag">Studio</span>
         </div>
         <div className="admin-header-right">
+          <OrdersToggle />
           <span className="admin-user">{session.user.email}</span>
           <button className="btn-admin ghost" onClick={() => supabase.auth.signOut()}>
             Sign out
