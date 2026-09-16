@@ -323,12 +323,39 @@ export default function CustomKreation() {
             Dianna's hands.
           </h2>
           <p>
-            Dianna will look this over and put a price on it. When she does, you can
-            see it, ask her anything, and accept — all in one place.
+            Check your inbox — a confirmation is on its way right now. If it isn't
+            there in a minute, look in spam and mark it as safe, so you don't miss
+            your price later.
           </p>
+
+          <ol className="confirm-steps">
+            <li>
+              <span className="cs-n">1</span>
+              <div>
+                <strong>Dianna reads it herself</strong>
+                Usually within a day or two. She may email you a question first.
+              </div>
+            </li>
+            <li>
+              <span className="cs-n">2</span>
+              <div>
+                <strong>You get a price by email</strong>
+                A real quote from her, not an automatic estimate.
+              </div>
+            </li>
+            <li>
+              <span className="cs-n">3</span>
+              <div>
+                <strong>You accept and pay</strong>
+                Only then does she start. Nothing is owed until you say yes.
+              </div>
+            </li>
+          </ol>
+
           <p className="confirm-signin">
-            Check back any time at <Link to="/signin">your account</Link>, using this
-            same email address. No password to set up.
+            To see your quote you'll sign in at <Link to="/account">your account</Link>{' '}
+            with this same email address — enter it and we email you a link. No
+            password to create, nothing to remember.
           </p>
           <Link to="/" className="btn btn-ghost">Back to Home</Link>
         </div>

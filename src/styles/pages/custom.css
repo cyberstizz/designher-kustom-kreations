@@ -237,3 +237,22 @@
 .page-custom .confirm-signin a{
   color:var(--champagne-soft);text-decoration:underline;text-underline-offset:3px;
 }
+
+/* Confirmation panel: what happens next, in order. Added because "we got it"
+   on its own left people unsure whether they were supposed to do something. */
+.page-custom .confirm-steps{
+  list-style:none;margin:26px auto 24px;padding:22px 0;max-width:430px;text-align:left;
+  border-top:1px solid var(--ink-line);border-bottom:1px solid var(--ink-line);
+  display:flex;flex-direction:column;gap:18px;
+}
+.page-custom .confirm-steps li{display:flex;gap:14px;align-items:flex-start;}
+.page-custom .confirm-steps .cs-n{
+  flex:none;width:26px;height:26px;border-radius:50%;
+  border:1px solid var(--champagne);color:var(--champagne);
+  font-family:var(--font-mono);font-size:11px;
+  display:flex;align-items:center;justify-content:center;margin-top:2px;
+}
+.page-custom .confirm-steps strong{
+  display:block;font-size:14.5px;font-weight:700;color:var(--bone);margin-bottom:3px;
+}
+.page-custom .confirm-steps div{font-size:13.5px;line-height:1.6;color:rgba(246,239,228,.62);}
