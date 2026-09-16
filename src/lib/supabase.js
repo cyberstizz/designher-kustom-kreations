@@ -79,12 +79,26 @@ export async function signedPhotoUrl(path, expiresInSeconds = 3600) {
 /** Insert a custom-order inquiry. Returns { ok, error }. */
 export async function submitInquiry(payload) {
   if (!supabase) return { ok: false, error: new Error('Supabase is not configured') };
-  // Returning the id lets the caller trigger the notification emails. The
-  // insert policy allows anon writes but not reads, so ask for the id alone.
-  const { data, error } = await supabase
-    .from('inquiries')
-    .insert([payload])
-    .select('id')
-    .single();
-  return { ok: !error, id: data?.id ?? null, error };
+
+  // The caller needs the new row's id to trigger the notification emails,
+  // but anonymous visitors are insert-only on this table by design (see the
+  // policy comment in schema.sql). Asking for the row back with .select()
+  // makes Postgres do INSERT ... RETURNING, which needs read permission the
+  // anon role does not have, and the whole insert fails with a 401.
+  //
+  // So generate the id here and send it. Same uuid the column default would
+  // have produced, and nothing has to be read back.
+  const id = newId();
+
+  const { error } = await supabase.from('inquiries').insert([{ id, ...payload }]);
+  return { ok: !error, id: error ? null : id, error };
+}
+
+/** uuid v4. crypto.randomUUID needs a secure context; this covers the rest. */
+function newId() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+  });
 }
