@@ -10,6 +10,7 @@
  */
 import Stripe from 'stripe';
 import { createClient } from '@supabase/supabase-js';
+import { adminAddress, adminPaid, customerPaid, send } from './_email.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -75,19 +76,24 @@ export default async (req) => {
         .eq('id', inquiryId);
       if (statusError) console.error('[webhook] status update', statusError.message);
 
-      // Tell Dianna. Inert until RESEND_API_KEY is set; never blocks the 200.
+      // Receipts, both ways. Never allowed to fail the webhook: Stripe would
+      // retry a 500 and we'd charge nothing twice but email twice.
       try {
-        const { notify } = await import('./_notify.js');
-        await notify({
-          to: process.env.NOTIFY_TO || process.env.NOTIFY_FROM,
-          subject: 'A kreation has been paid for',
-          heading: 'Payment received',
-          body: 'A customer just paid in full. The request has moved to "Being made" in your studio.',
-          linkUrl: `${process.env.URL || ''}/admin`,
-          linkLabel: 'Open the studio',
-        });
-      } catch {
-        // No notifier wired up yet — fine.
+        const { data: inquiry } = await admin
+          .from('inquiries')
+          .select('full_name, email, base')
+          .eq('id', inquiryId)
+          .maybeSingle();
+
+        if (inquiry) {
+          const cents = session.amount_total ?? 0;
+          await Promise.all([
+            send(adminAddress(), adminPaid(inquiry, cents), { replyTo: inquiry.email }),
+            send(inquiry.email, customerPaid(inquiry, cents, receiptUrl), { replyTo: adminAddress() }),
+          ]);
+        }
+      } catch (err) {
+        console.error('[webhook] email', err.message);
       }
     }
   }

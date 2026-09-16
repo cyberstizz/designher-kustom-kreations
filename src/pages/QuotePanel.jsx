@@ -7,6 +7,7 @@ import {
   formatMoney,
   parseMoney,
 } from '../lib/quotes.js';
+import { notifyQuoteSent } from '../lib/notify.js';
 
 function when(iso) {
   return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
@@ -66,9 +67,12 @@ export default function QuotePanel({ inquiry }) {
     }
     setBusy('quote');
     setError('');
-    const { error } = await sendQuote(inquiry.id, { amountCents: cents, message: note });
+    const { data, error } = await sendQuote(inquiry.id, { amountCents: cents, message: note });
     setBusy('');
     if (error) return setError(error.message);
+    // Email the customer their price. Not awaited: the quote is saved, and
+    // she shouldn't be left staring at a spinner over an email.
+    notifyQuoteSent(data?.id);
     setAmount('');
     setNote('');
     load();

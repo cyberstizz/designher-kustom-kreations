@@ -200,6 +200,13 @@ export default function init() {
       }).then(function(res){
         if(!res.ok) throw (res.error || new Error('Submission failed'));
         showConfirmation();
+        // Emails go out server-side. Deliberately not awaited: the request is
+        // already saved, so an email problem must not read as a failed send.
+        import('../../lib/notify.js').then(function(n){
+          n.notifyInquiryCreated(res.id);
+        }).catch(function(err){
+          console.error('[notify]', err);
+        });
       }).catch(function(err){
         console.error('[inquiry]', err);
         if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = originalLabel; }

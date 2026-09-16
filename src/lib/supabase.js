@@ -79,6 +79,12 @@ export async function signedPhotoUrl(path, expiresInSeconds = 3600) {
 /** Insert a custom-order inquiry. Returns { ok, error }. */
 export async function submitInquiry(payload) {
   if (!supabase) return { ok: false, error: new Error('Supabase is not configured') };
-  const { error } = await supabase.from('inquiries').insert([payload]);
-  return { ok: !error, error };
+  // Returning the id lets the caller trigger the notification emails. The
+  // insert policy allows anon writes but not reads, so ask for the id alone.
+  const { data, error } = await supabase
+    .from('inquiries')
+    .insert([payload])
+    .select('id')
+    .single();
+  return { ok: !error, id: data?.id ?? null, error };
 }
