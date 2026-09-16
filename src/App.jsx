@@ -15,12 +15,28 @@ import NotFound from './pages/NotFound.jsx';
 // The admin UI ships to Dianna only; lazy so public visitors never download it.
 const Admin = lazy(() => import('./pages/Admin.jsx'));
 
-/** Jump to the top on route change, or to the #anchor if the link has one. */
+/**
+ * Jump to the top on route change, or to the #anchor if the link has one.
+ *
+ * The hash is not always an anchor. Supabase returns a magic-link sign-in as
+ * #access_token=...&refresh_token=..., which is a valid URL fragment and a
+ * syntactically invalid CSS selector — passing it to querySelector throws,
+ * and an exception here blanks the whole page before Supabase can read the
+ * token. So only treat the hash as a selector when it actually looks like an
+ * element id, and never let a bad one escape.
+ */
+const ANCHOR = /^#[A-Za-z][\w-]*$/;
+
 function ScrollManager() {
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    if (hash) {
-      const el = document.querySelector(hash);
+    if (hash && ANCHOR.test(hash)) {
+      let el = null;
+      try {
+        el = document.querySelector(hash);
+      } catch {
+        el = null;
+      }
       if (el) {
         el.scrollIntoView({ behavior: 'smooth' });
         return;
