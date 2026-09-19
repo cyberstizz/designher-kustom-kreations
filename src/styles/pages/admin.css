@@ -434,3 +434,18 @@
 .page-admin .theme-publish .field-hint b{color:var(--bone);}
 .page-admin .theme-publish-row{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0 10px;}
 .page-admin .theme-publish-row .btn-admin{width:auto;min-width:200px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;}
+
+/* Quote state. The panel used to hide a quote as soon as it left "sent",
+   which read as "nothing was sent". Now it always shows where the money is. */
+.page-admin .live-quote{border-left:3px solid var(--champagne);}
+.page-admin .live-quote .lq-state{
+  display:inline-block;margin:8px 0 2px;padding:5px 10px;border-radius:2px;
+  font-family:var(--font-mono);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+}
+.page-admin .lq-state.lq-sent{background:rgba(203,163,92,.16);color:var(--champagne-soft);}
+.page-admin .lq-state.lq-accepted{background:rgba(203,163,92,.16);color:var(--champagne-soft);}
+.page-admin .lq-state.lq-paid{background:rgba(120,180,140,.16);color:#9ed4b0;}
+.page-admin .lq-state.lq-declined{background:rgba(216,28,64,.14);color:#ff9aa8;}
+.page-admin .live-quote.lq-paid{border-left-color:#9ed4b0;}
+.page-admin .live-quote.lq-declined{border-left-color:#ff9aa8;}
+.page-admin .live-quote .lq-meta{display:block;margin-top:6px;}
