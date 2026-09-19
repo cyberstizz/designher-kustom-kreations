@@ -5,6 +5,7 @@ import { signOut } from '../lib/auth.js';
 import { fetchRequest, displayStatus } from '../lib/account.js';
 import { formatMoney, respondToQuote, sendMessage } from '../lib/quotes.js';
 import { fetchPayments, paidPayment, startCheckout } from '../lib/payments.js';
+import { notifyMessageSent, notifyQuoteAccepted } from '../lib/notify.js';
 import SignIn from './SignIn.jsx';
 import '../styles/pages/account.css';
 
@@ -86,7 +87,10 @@ export default function RequestDetail() {
   async function handleAccept() {
     setBusy('accept');
     setError('');
-    const { error } = await respondToQuote(request.quote.id, 'accepted');
+    const quoteId = request.quote.id;
+    const { error } = await respondToQuote(quoteId, 'accepted');
+    // Tell Dianna. Not awaited: the acceptance is already recorded.
+    if (!error) notifyQuoteAccepted(quoteId);
     setBusy('');
     if (error) setError(error.message);
     else load();
@@ -110,7 +114,8 @@ export default function RequestDetail() {
     }
     setBusy('send');
     setError('');
-    const { error } = await sendMessage(id, reply, 'customer');
+    const { data, error } = await sendMessage(id, reply, 'customer');
+    if (!error) notifyMessageSent(data?.id);
     setBusy('');
     if (error) return setError(error.message);
     setReply('');
