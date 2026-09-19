@@ -29,3 +29,13 @@ export function notifyInquiryCreated(inquiryId) {
 export function notifyQuoteSent(quoteId) {
   return notify('quote_sent', quoteId);
 }
+
+/** Someone posted in the message thread. Emails whichever side didn't. */
+export function notifyMessageSent(messageId) {
+  return notify('message_sent', messageId);
+}
+
+/** The customer accepted their price. Emails Dianna. */
+export function notifyQuoteAccepted(quoteId) {
+  return notify('quote_accepted', quoteId);
+}

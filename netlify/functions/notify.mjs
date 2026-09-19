@@ -20,7 +20,10 @@
 import { createClient } from '@supabase/supabase-js';
 import {
   adminAddress,
+  adminMessage,
   adminNewRequest,
+  adminQuoteAccepted,
+  customerMessage,
   customerQuoteReady,
   customerRequestReceived,
   send,
@@ -99,6 +102,71 @@ export default async (req) => {
 
     const result = await send(inquiry.email, customerQuoteReady(inquiry, quote), {
       replyTo: adminAddress(),
+    });
+
+    return json(200, { sent: [result.sent] });
+  }
+
+  /* ------------------------------------ somebody wrote in the thread */
+  if (event === 'message_sent') {
+    const { data: message, error } = await admin
+      .from('messages')
+      .select('id, inquiry_id, sender, body, created_at, notified_at')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error || !message) return json(404, { error: 'Not found' });
+    if (message.notified_at) return json(200, { skipped: 'already notified' });
+    if (!isFresh(message.created_at)) return json(200, { skipped: 'too old' });
+
+    const { data: inquiry } = await admin
+      .from('inquiries')
+      .select('*')
+      .eq('id', message.inquiry_id)
+      .maybeSingle();
+
+    if (!inquiry) return json(404, { error: 'Not found' });
+
+    await admin.from('messages').update({ notified_at: new Date().toISOString() }).eq('id', id);
+
+    // Whoever didn't write it is the one who needs to hear about it.
+    const toCustomer = message.sender === 'admin';
+    const result = toCustomer
+      ? await send(inquiry.email, customerMessage(inquiry, message.body), { replyTo: adminAddress() })
+      : await send(adminAddress(), adminMessage(inquiry, message.body), { replyTo: inquiry.email });
+
+    return json(200, { sent: [result.sent] });
+  }
+
+  /* -------------------------------------- the customer took the price */
+  if (event === 'quote_accepted') {
+    const { data: quote, error } = await admin
+      .from('quotes')
+      .select('id, inquiry_id, amount_cents, status, accept_notified_at')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (error || !quote) return json(404, { error: 'Not found' });
+    if (quote.accept_notified_at) return json(200, { skipped: 'already notified' });
+    // Trust the database, not the caller: only a genuinely accepted quote
+    // can trigger this, whatever the request body claims.
+    if (quote.status !== 'accepted') return json(200, { skipped: 'not accepted' });
+
+    const { data: inquiry } = await admin
+      .from('inquiries')
+      .select('*')
+      .eq('id', quote.inquiry_id)
+      .maybeSingle();
+
+    if (!inquiry) return json(404, { error: 'Not found' });
+
+    await admin
+      .from('quotes')
+      .update({ accept_notified_at: new Date().toISOString() })
+      .eq('id', id);
+
+    const result = await send(adminAddress(), adminQuoteAccepted(inquiry, quote), {
+      replyTo: inquiry.email,
     });
 
     return json(200, { sent: [result.sent] });

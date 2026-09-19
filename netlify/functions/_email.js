@@ -335,6 +335,88 @@ export function customerPaid(inquiry, amountCents, receiptUrl) {
   };
 }
 
+/** To the customer: Dianna wrote back in the thread. */
+export function customerMessage(inquiry, body) {
+  const lines = [
+    `Hi ${firstName(inquiry.full_name)} — Dianna replied about your ${inquiry.base || 'kreation'}.`,
+  ];
+  return {
+    subject: 'Dianna replied about your kreation',
+    html: layout({
+      preheader: body.slice(0, 90),
+      eyebrow: 'New message',
+      heading: 'Dianna wrote back',
+      body:
+        lines.map((l) => `<p style="margin:0 0 14px;">${esc(l)}</p>`).join('') +
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 0;background:#241A2C;border-left:3px solid ${CHAMPAGNE};border-radius:3px;">
+           <tr><td style="padding:18px 20px;font-family:${SANS};font-size:14.5px;line-height:1.7;color:${BONE};">${esc(body).replace(/\n/g, '<br>')}</td></tr>
+         </table>`,
+      cta: 'Reply on the site',
+      ctaUrl: `${SITE}/account`,
+      footnote: 'Replying to this email reaches her too.',
+    }),
+    text: plain({
+      heading: 'Dianna wrote back',
+      lines: [...lines, body],
+      cta: 'Reply on the site',
+      ctaUrl: `${SITE}/account`,
+    }),
+  };
+}
+
+/** To Dianna: the customer wrote in the thread. */
+export function adminMessage(inquiry, body) {
+  const lines = [`${inquiry.full_name || 'A customer'} replied about their ${inquiry.base || 'request'}.`];
+  return {
+    subject: `${inquiry.full_name || 'A customer'} replied`,
+    html: layout({
+      preheader: body.slice(0, 90),
+      eyebrow: 'New message',
+      heading: 'A customer wrote back',
+      body:
+        lines.map((l) => `<p style="margin:0 0 14px;">${esc(l)}</p>`).join('') +
+        `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:22px 0 0;background:#241A2C;border-left:3px solid ${CHAMPAGNE};border-radius:3px;">
+           <tr><td style="padding:18px 20px;font-family:${SANS};font-size:14.5px;line-height:1.7;color:${BONE};">${esc(body).replace(/\n/g, '<br>')}</td></tr>
+         </table>`,
+      cta: 'Open the studio',
+      ctaUrl: `${SITE}/admin`,
+      footnote: 'Answer in the studio to keep it in the thread, or just reply to this email.',
+    }),
+    text: plain({
+      heading: 'A customer wrote back',
+      lines: [...lines, body],
+      cta: 'Open the studio',
+      ctaUrl: `${SITE}/admin`,
+    }),
+  };
+}
+
+/** To Dianna: they took the price. Now she waits for the card. */
+export function adminQuoteAccepted(inquiry, quote) {
+  const lines = [
+    `${inquiry.full_name || 'A customer'} accepted your price of ${money(quote.amount_cents)}.`,
+    'They can pay by card from their account page now. You will get another email the moment the payment clears — that is when to start.',
+  ];
+  const rows = [
+    ['Accepted', money(quote.amount_cents)],
+    ['Customer', inquiry.full_name],
+    ['Piece', inquiry.base],
+  ];
+  return {
+    subject: `Accepted — ${money(quote.amount_cents)} from ${inquiry.full_name || 'a customer'}`,
+    html: layout({
+      preheader: 'They said yes. Payment is the next step.',
+      eyebrow: 'Quote accepted',
+      heading: 'They said yes',
+      body: lines.map((l) => `<p style="margin:0 0 14px;">${esc(l)}</p>`).join(''),
+      rows,
+      cta: 'Open the studio',
+      ctaUrl: `${SITE}/admin`,
+    }),
+    text: plain({ heading: 'Quote accepted', lines, rows, cta: 'Open the studio', ctaUrl: `${SITE}/admin` }),
+  };
+}
+
 /* ============================================================= sending */
 
 /**
