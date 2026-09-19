@@ -7,7 +7,8 @@ import {
   formatMoney,
   parseMoney,
 } from '../lib/quotes.js';
-import { notifyQuoteSent } from '../lib/notify.js';
+import { notifyMessageSent, notifyQuoteSent } from '../lib/notify.js';
+import { fetchPayments, paidPayment } from '../lib/payments.js';
 
 function when(iso) {
   return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
@@ -21,6 +22,7 @@ function when(iso) {
 export default function QuotePanel({ inquiry }) {
   const [quotes, setQuotes] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [payment, setPayment] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -30,25 +32,35 @@ export default function QuotePanel({ inquiry }) {
   const [busy, setBusy] = useState('');
 
   async function load() {
-    const [q, m] = await Promise.all([fetchQuotes(inquiry.id), fetchMessages(inquiry.id)]);
+    const [q, m, p] = await Promise.all([
+      fetchQuotes(inquiry.id),
+      fetchMessages(inquiry.id),
+      fetchPayments(inquiry.id),
+    ]);
     if (q.error || m.error) setError((q.error || m.error).message);
     else {
       setQuotes(q.data);
       setMessages(m.data);
     }
+    setPayment(paidPayment(p.data));
     setLoading(false);
   }
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [q, m] = await Promise.all([fetchQuotes(inquiry.id), fetchMessages(inquiry.id)]);
+      const [q, m, p] = await Promise.all([
+        fetchQuotes(inquiry.id),
+        fetchMessages(inquiry.id),
+        fetchPayments(inquiry.id),
+      ]);
       if (cancelled) return;
       if (q.error || m.error) setError((q.error || m.error).message);
       else {
         setQuotes(q.data);
         setMessages(m.data);
       }
+      setPayment(paidPayment(p.data));
       setLoading(false);
     })();
     return () => {
@@ -56,8 +68,23 @@ export default function QuotePanel({ inquiry }) {
     };
   }, [inquiry.id]);
 
-  const live = quotes.find((q) => q.status === 'sent');
-  const history = quotes.filter((q) => q.status !== 'sent');
+  // The newest quote is the one that counts, whatever state it is in. An
+  // earlier version showed only quotes still marked "sent", so the moment a
+  // customer accepted, the price vanished from this panel and looked like
+  // nothing had been sent at all.
+  const current = quotes[0] || null;
+  const history = quotes.slice(1);
+  const outstanding = current?.status === 'sent';
+
+  function quoteState() {
+    if (!current) return null;
+    if (payment) return { label: 'Paid in full', tone: 'paid', note: `Card cleared ${when(payment.paid_at)}. Time to set stones.` };
+    if (current.status === 'accepted') return { label: 'Accepted — waiting on payment', tone: 'accepted', note: 'They can pay by card from their account page. You will get an email the moment it clears.' };
+    if (current.status === 'declined') return { label: 'Declined', tone: 'declined', note: 'They turned this price down. You can send a new one below.' };
+    if (current.status === 'superseded') return { label: 'Replaced', tone: 'declined', note: 'A newer price replaced this one.' };
+    return { label: 'Sent — waiting on them', tone: 'sent', note: 'They have been emailed. Nothing to do until they accept.' };
+  }
+  const state = quoteState();
 
   async function handleSendQuote() {
     const cents = parseMoney(amount);
@@ -85,9 +112,11 @@ export default function QuotePanel({ inquiry }) {
     }
     setBusy('message');
     setError('');
-    const { error } = await sendMessage(inquiry.id, reply);
+    const { data, error } = await sendMessage(inquiry.id, reply);
     setBusy('');
     if (error) return setError(error.message);
+    // Email the customer so they know to come back and read it.
+    notifyMessageSent(data?.id);
     setReply('');
     load();
   }
@@ -98,18 +127,19 @@ export default function QuotePanel({ inquiry }) {
     <div className="quote-panel">
       {error && <p className="admin-error">{error}</p>}
 
-      {live && (
-        <div className="live-quote">
+      {current && (
+        <div className={`live-quote lq-${state.tone}`}>
           <div>
             <span className="lq-label">Quoted</span>
-            <span className="lq-amount">{formatMoney(live.amount_cents)}</span>
+            <span className="lq-amount">{formatMoney(current.amount_cents)}</span>
           </div>
-          <span className="lq-meta">Sent {when(live.created_at)} · full payment upfront</span>
+          <span className={`lq-state lq-${state.tone}`}>{state.label}</span>
+          <span className="lq-meta">Sent {when(current.created_at)} · {state.note}</span>
         </div>
       )}
 
       <div className="quote-form">
-        <span className="qf-label">{live ? 'Send a new price' : 'Send a quote'}</span>
+        <span className="qf-label">{current ? 'Send a new price' : 'Send a quote'}</span>
         <div className="qf-row">
           <input
             type="text"
@@ -128,11 +158,17 @@ export default function QuotePanel({ inquiry }) {
           placeholder="What the price covers, and roughly how long it takes."
         />
         <button className="btn-admin small" onClick={handleSendQuote} disabled={busy === 'quote'}>
-          {busy === 'quote' ? 'Sending…' : live ? 'Replace price' : 'Send quote'}
+          {busy === 'quote' ? 'Sending…' : current ? 'Replace price' : 'Send quote'}
         </button>
-        {live && (
+        {outstanding && (
           <p className="field-hint">
             The old price is kept in the history below and no longer counts.
+          </p>
+        )}
+        {!current && (
+          <p className="field-hint">
+            They get an email with this price and pay by card themselves once they
+            accept. You never handle their card details.
           </p>
         )}
       </div>
