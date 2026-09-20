@@ -318,3 +318,83 @@
   .page-home .wordmark .garland .light{animation:none;}
   .page-home .event-card .ek::before{animation:none;}
 }
+/* ------------------------------------------------- theme notification
+   Slides in on the home page when a theme is live. Two shapes: with a
+   photo (Dianna chose one for this occasion) and without (she didn't, so
+   the card draws its own panel instead of borrowing an unrelated sneaker). */
+.theme-notice{
+  position:fixed;right:22px;bottom:22px;z-index:70;width:340px;max-width:calc(100vw - 32px);
+  background:var(--ink-soft);border:1px solid var(--ink-line);border-radius:8px;overflow:hidden;
+  box-shadow:0 28px 60px -24px rgba(0,0,0,.8);
+  transform:translateY(22px) scale(.97);opacity:0;
+  transition:transform .55s var(--ease),opacity .45s var(--ease);
+}
+.theme-notice.is-in{transform:translateY(0) scale(1);opacity:1;}
+.theme-notice.is-out{transform:translateY(16px) scale(.97);opacity:0;pointer-events:none;}
+.theme-notice::before{
+  content:"";position:absolute;left:0;top:0;bottom:0;width:3px;z-index:3;
+  background:linear-gradient(180deg,var(--ruby-bright),var(--champagne));
+}
+
+.theme-notice .tn-close{
+  position:absolute;top:10px;right:10px;z-index:4;width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(21,15,26,.6);backdrop-filter:blur(6px);
+  border:1px solid var(--ink-line);color:var(--bone);
+  transition:background .2s;
+}
+.theme-notice .tn-close svg{width:13px;height:13px;}
+.theme-notice .tn-close:hover{background:rgba(21,15,26,.9);}
+
+.theme-notice .tn-media{position:relative;height:150px;background:var(--ink);overflow:hidden;}
+.theme-notice .tn-media img{width:100%;height:100%;object-fit:cover;}
+.theme-notice .tn-media::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(21,15,26,.1) 40%,rgba(30,22,36,.95) 100%);
+}
+
+/* the no-photo version: the theme's own glow plus the house gem */
+.theme-notice.no-photo .tn-mark{
+  height:96px;display:flex;align-items:center;justify-content:center;color:var(--champagne);
+  background:
+    radial-gradient(90% 120% at 50% 0%,color-mix(in srgb,var(--ruby-bright) 28%,transparent),transparent 70%),
+    var(--ink);
+  border-bottom:1px solid var(--ink-line);
+}
+.theme-notice.no-photo .tn-mark svg{width:32px;height:32px;}
+
+.theme-notice .tn-body{padding:18px 20px 20px;}
+.theme-notice .tn-kicker{
+  display:block;font-family:var(--font-mono);font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--champagne-soft);margin-bottom:8px;
+}
+.theme-notice h3{
+  font-family:var(--font-display);font-weight:500;font-size:20px;line-height:1.15;
+  margin:0 0 8px;color:var(--bone);
+}
+.theme-notice p{
+  font-size:13.5px;line-height:1.6;color:rgba(246,239,228,.68);margin:0 0 16px;
+}
+.theme-notice .tn-cta{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-body);font-size:13px;font-weight:700;color:var(--bone);
+  background:var(--ruby);padding:11px 16px;border-radius:3px;
+  transition:background .25s,transform .25s var(--ease);
+}
+.theme-notice .tn-cta svg{width:13px;height:13px;transition:transform .25s var(--ease);}
+.theme-notice .tn-cta:hover{background:var(--ruby-bright);transform:translateY(-1px);}
+.theme-notice .tn-cta:hover svg{transform:translateX(3px);}
+
+@media (max-width:620px){
+  /* a bottom sheet on phones — a floating corner card covers the content */
+  .theme-notice{
+    left:12px;right:12px;bottom:12px;width:auto;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .theme-notice .tn-media{height:118px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .theme-notice{transition:opacity .2s;transform:none;}
+  .theme-notice.is-in{transform:none;}
+  .theme-notice.is-out{transform:none;}
+}
