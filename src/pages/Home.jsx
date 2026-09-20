@@ -9,6 +9,7 @@ import ThemeFx from '../components/ThemeFx.jsx';
 import { categoryLabel, fetchPublishedProducts } from '../lib/products.js';
 import { DEFAULTS, fetchSettings, ordersPaused, reopenPhrase } from '../lib/settings.js';
 import OrdersPausedNotice from '../components/OrdersPausedNotice.jsx';
+import ThemeNotice from '../components/ThemeNotice.jsx';
 import { THEMES, fetchActiveThemeKey, fetchThemeRows, resolveTheme } from '../lib/themes.js';
 
 /** Live countdown for the pop-up card. Shows "Happening now" once it starts. */
@@ -383,6 +384,10 @@ export default function Home() {
           </div>
         </section>
       </main>
+      {/* Only when a theme is live, and never while the order book is closed —
+          one announcement at a time. */}
+      {!paused && <ThemeNotice theme={t} />}
+
       <SiteFooter />
     </div>
   );
