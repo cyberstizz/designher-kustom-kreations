@@ -35,6 +35,7 @@ export const THEMES = {
     label: 'Default',
     swatch: ['#150F1A', '#B0142F', '#CBA35C'],
     bar: null,
+    notice: null,
     eyebrow: 'Hand-set in Laurelton, Queens',
     h1: ['Every stone,', 'set by hand', 'for you.'],
     lede:
@@ -72,6 +73,7 @@ export const THEMES = {
     label: 'Christmas',
     swatch: ['#0C1F18', '#B0142F', '#D9B45E'],
     bar: { text: 'Holiday orders are open', detail: 'Order by {orderBy} to unwrap on time', link: 'Start a gift kreation', to: '/custom' },
+    notice: { title: 'Holiday orders are open', body: 'Dianna is taking gift kreations until {orderBy}. Hand-set, one of one, wrapped and shipped in time.', cta: 'Start a gift kreation', to: '/custom' },
     eyebrow: 'Holiday kreations, set by hand',
     h1: ['Something sparkling', 'under the tree,', 'made for them.'],
     lede:
@@ -110,6 +112,7 @@ export const THEMES = {
     label: 'Halloween',
     swatch: ['#0E0A14', '#E06A15', '#C9A0FF'],
     bar: { text: 'Costume season', detail: 'Custom orders placed by {orderBy} arrive before the 31st', link: 'Get spooky', to: '/custom' },
+    notice: { title: 'Costume season is here', body: 'Order by {orderBy} and your stones are set before the 31st. Pumpkin, violet, jet black.', cta: 'See the dark collection', to: '/shop' },
     eyebrow: 'Costume-ready customs, Queens',
     h1: ['Bewitching stones,', 'set by hand', 'after dark.'],
     lede:
@@ -148,6 +151,7 @@ export const THEMES = {
     label: "Mother's Day",
     swatch: ['#1E1219', '#C94A78', '#D8B27A'],
     bar: { text: "Mother's Day", detail: 'Order by {orderBy} for delivery before Sunday', link: 'Make hers', to: '/custom' },
+    notice: { title: "Mother's Day kreations", body: 'Set by one mother for another. Order by {orderBy} to have it in her hands on the day.', cta: 'Make hers', to: '/custom' },
     eyebrow: 'For the woman who set every stone in you',
     h1: ['For the one', 'who made you', 'shine first.'],
     lede:
@@ -186,6 +190,7 @@ export const THEMES = {
     label: "Valentine's",
     swatch: ['#200712', '#FF3D63', '#E7B4C0'],
     bar: { text: "Valentine's Day", detail: 'Custom orders placed by {orderBy} arrive by February 14', link: 'Say it in stones', to: '/custom' },
+    notice: { title: 'Say it in stones', body: 'Roses last a week. Order by {orderBy} and hand-set stones last a lot longer.', cta: 'Start a Valentine kreation', to: '/custom' },
     eyebrow: 'Hand-set in Laurelton, with love',
     h1: ['Say it', 'in stones,', 'not roses.'],
     lede:
@@ -224,6 +229,7 @@ export const THEMES = {
     label: '4th of July',
     swatch: ['#0C1330', '#C8102E', '#EDEFF2'],
     bar: { text: 'Independence Day', detail: 'Red, white and rhinestone customs — order by {orderBy}', link: 'Start yours', to: '/custom' },
+    notice: { title: 'Red, white and rhinestone', body: 'Ruby, platinum and sapphire for the cookout. Order by {orderBy} for the long weekend.', cta: 'Start yours', to: '/custom' },
     eyebrow: 'Hand-set in Queens, worn nationwide',
     h1: ['Red, white', 'and', 'rhinestone.'],
     lede:
@@ -262,6 +268,7 @@ export const THEMES = {
     label: 'Juneteenth',
     swatch: ['#0B0B0D', '#C8102E', '#007940'],
     bar: { text: 'Juneteenth', detail: 'Celebrating freedom, community and Black-owned craft in Queens', link: 'Read our story', to: '/about' },
+    notice: { title: 'Juneteenth, set by hand', body: 'A Black woman-owned studio in Southeast Queens. Red, black, green and gold, ordered by {orderBy}.', cta: 'Read our story', to: '/about' },
     eyebrow: 'Black-owned, hand-set in Laurelton',
     h1: ['Freedom,', 'set by hand,', 'one stone at a time.'],
     lede:
@@ -300,6 +307,7 @@ export const THEMES = {
     label: 'Pop-up shop',
     swatch: ['#150F1A', '#FF3D63', '#CBA35C'],
     bar: { text: 'Pop-up shop', detail: '{eventDate} · {venue} · {eventTime}', link: 'Get directions', to: 'directions' },
+    notice: { title: 'Pop-up shop — {eventDateShort}', body: '{venue}, {eventTime}. Try pieces on, take them home the same day. Cash and card.', cta: 'Get directions', to: 'directions' },
     eyebrow: 'Next pop-up · {venue}',
     h1: ['See the stones', 'in person', '{eventDayPhrase}'],
     lede:
@@ -338,6 +346,7 @@ export const THEMES = {
     label: "New Year's",
     swatch: ['#09080B', '#E0BC63', '#EDEFF2'],
     bar: { text: 'New Year, new one-of-ones', detail: 'Custom orders for the countdown close {orderBy}', link: 'Ring it in', to: '/custom' },
+    notice: { title: 'New year, new one-of-ones', body: 'Champagne, platinum and jet for midnight. Custom orders close {orderBy}.', cta: 'Start a kreation', to: '/custom' },
     eyebrow: 'Hand-set in Laurelton, ready for midnight',
     h1: ['New year,', 'new', 'one-of-ones.'],
     lede:
@@ -462,8 +471,12 @@ export function resolveTheme(key, row, siteDefaults) {
     address ? `${venue}, ${address}` : `${venue}, Queens, NY`
   )}`;
 
-  const heroImage =
-    row.hero_image_url || siteDefaults.hero_image_url;
+  // Did Dianna actually pick a photo FOR this theme, or is this just the
+  // everyday hero standing in? The notification card needs to know: showing
+  // a sneaker beside the words "Valentine's Day" looks worse than showing
+  // no photo at all.
+  const ownImage = Boolean(row.hero_image_url);
+  const heroImage = row.hero_image_url || siteDefaults.hero_image_url;
   const heroBadge =
     key === 'default'
       ? (siteDefaults.hero_badge ?? spec.badge)
@@ -504,6 +517,16 @@ export function resolveTheme(key, row, siteDefaults) {
     band2To: key === 'popup' ? '/custom' : '/shop',
     fx: spec.fx,
     heroImage,
+    ownImage,
+    notice: spec.notice
+      ? {
+          title: f(spec.notice.title),
+          body: f(spec.notice.body),
+          cta: spec.notice.cta,
+          to: spec.notice.to === 'directions' ? directionsUrl : spec.notice.to,
+          external: spec.notice.to === 'directions',
+        }
+      : null,
     event: spec.hasEvent
       ? { venue, address, eventDate, eventTime, startAt: eventStartAt, directionsUrl }
       : null,
