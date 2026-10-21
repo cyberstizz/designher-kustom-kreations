@@ -9,6 +9,8 @@ import {
   deleteProduct,
   saveOrder,
   uploadProductImage,
+  uploadProductVideo,
+  deleteProductVideo,
 } from '../lib/products.js';
 
 const BLANK = {
@@ -19,6 +21,7 @@ const BLANK = {
   description: '',
   image_url: '',
   images: [],
+  video_url: '',
   published: false,
 };
 
@@ -29,7 +32,12 @@ function ProductForm({ product, onSaved, onCancel }) {
   const [slugTouched, setSlugTouched] = useState(!isNew);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [videoBusy, setVideoBusy] = useState(false);
   const [error, setError] = useState('');
+
+  // The video this product had when the form opened. Anything uploaded
+  // after that is "new" until saved, so Cancel can clean it up.
+  const originalVideo = product.video_url || '';
 
   function set(field, value) {
     setForm((f) => ({ ...f, [field]: value }));
@@ -57,6 +65,33 @@ function ProductForm({ product, onSaved, onCancel }) {
     setUploading(false);
   }
 
+  async function handleVideo(file) {
+    if (!file) return;
+    setVideoBusy(true);
+    setError('');
+    const { url, error } = await uploadProductVideo(file, form.slug || slugify(form.title));
+    setVideoBusy(false);
+    if (error) {
+      setError(error.message);
+      return;
+    }
+    // Replacing a video uploaded in this same session: that one was never
+    // saved, so nothing else points at it. Remove it now.
+    if (form.video_url && form.video_url !== originalVideo) deleteProductVideo(form.video_url);
+    set('video_url', url);
+  }
+
+  function removeVideo() {
+    if (form.video_url && form.video_url !== originalVideo) deleteProductVideo(form.video_url);
+    set('video_url', '');
+  }
+
+  function handleCancel() {
+    // An unsaved upload is an orphan the moment the form closes.
+    if (form.video_url && form.video_url !== originalVideo) deleteProductVideo(form.video_url);
+    onCancel();
+  }
+
   function removeGalleryImage(url) {
     setForm((f) => ({ ...f, images: (f.images || []).filter((u) => u !== url) }));
   }
@@ -76,6 +111,7 @@ function ProductForm({ product, onSaved, onCancel }) {
       description: form.description?.trim() || null,
       image_url: form.image_url || null,
       images: form.images || [],
+      video_url: form.video_url || null,
       published: form.published,
     };
 
@@ -93,6 +129,9 @@ function ProductForm({ product, onSaved, onCancel }) {
       );
       return;
     }
+    // Saved. If the video was replaced or removed, the old file is now
+    // unused — delete it so it stops counting against the 1 GB.
+    if (originalVideo && originalVideo !== (form.video_url || '')) deleteProductVideo(originalVideo);
     onSaved(data);
   }
 
@@ -194,6 +233,31 @@ function ProductForm({ product, onSaved, onCancel }) {
         }}
       />
 
+      <label>Video (optional)</label>
+      {form.video_url ? (
+        <div className="video-preview">
+          <video src={form.video_url} controls playsInline preload="metadata" />
+          <button type="button" className="btn-admin ghost small" onClick={removeVideo}>
+            Remove video
+          </button>
+        </div>
+      ) : (
+        <p className="field-hint">
+          One short clip, under 30 seconds and 30 MB. 10 to 15 seconds of the piece
+          catching the light works best. It plays on the product page when someone taps it.
+        </p>
+      )}
+      <input
+        type="file"
+        accept="video/mp4,video/quicktime,video/webm,.mp4,.mov,.m4v,.webm"
+        disabled={videoBusy}
+        onChange={(e) => {
+          handleVideo(e.target.files?.[0]);
+          e.target.value = '';
+        }}
+      />
+      {videoBusy && <p className="field-hint">Checking and uploading video… keep this page open.</p>}
+
       <label className="checkbox-row">
         <input
           type="checkbox"
@@ -210,10 +274,10 @@ function ProductForm({ product, onSaved, onCancel }) {
       {error && <p className="admin-error">{error}</p>}
 
       <div className="form-actions">
-        <button className="btn-admin" type="submit" disabled={busy || uploading}>
+        <button className="btn-admin" type="submit" disabled={busy || uploading || videoBusy}>
           {busy ? 'Saving…' : isNew ? 'Add piece' : 'Save changes'}
         </button>
-        <button className="btn-admin ghost" type="button" onClick={onCancel}>
+        <button className="btn-admin ghost" type="button" onClick={handleCancel}>
           Cancel
         </button>
       </div>
@@ -274,7 +338,7 @@ export default function ProductsPanel() {
 
   async function handleDelete(row) {
     if (!window.confirm(`Delete "${row.title}"? This cannot be undone.`)) return;
-    const { error } = await deleteProduct(row.id);
+    const { error } = await deleteProduct(row.id, row.video_url);
     if (error) setError(error.message);
     else setRows((prev) => prev.filter((r) => r.id !== row.id));
   }

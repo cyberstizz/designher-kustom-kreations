@@ -449,3 +449,9 @@
 .page-admin .live-quote.lq-paid{border-left-color:#9ed4b0;}
 .page-admin .live-quote.lq-declined{border-left-color:#ff9aa8;}
 .page-admin .live-quote .lq-meta{display:block;margin-top:6px;}
+/* Product video preview in the edit form. */
+.page-admin .video-preview{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin:0 0 10px;}
+.page-admin .video-preview video{
+  width:100%;max-width:280px;aspect-ratio:4/5;object-fit:cover;
+  border-radius:6px;background:#000;border:1px solid var(--ink-line);
+}

@@ -68,6 +68,9 @@ function Icons() {
       <symbol id="ic-arrow" viewBox="0 0 24 24">
         <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
       </symbol>
+      <symbol id="ic-play" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M8 5.5v13a.6.6 0 0 0 .9.5l10.2-6.5a.6.6 0 0 0 0-1L8.9 5a.6.6 0 0 0-.9.5z" />
+      </symbol>
       <symbol id="ic-close" viewBox="0 0 24 24">
         <path fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" d="M6 6l12 12M18 6L6 18" />
       </symbol>
@@ -209,10 +212,33 @@ export default function Product() {
     return () => io.disconnect();
   }, [status]);
 
-  const gallery = galleryFor(product);
+  // Photos plus the optional video, as one strip. The video goes second —
+  // right after the cover photo — so it's seen without having to hunt for it,
+  // but the first impression is still a still image that loads instantly.
+  const photos = galleryFor(product);
+  const media = photos.map((src) => ({ type: 'image', src }));
+  if (product?.video_url) {
+    media.splice(Math.min(1, media.length), 0, {
+      type: 'video',
+      src: product.video_url,
+      poster: photos[0] || undefined,
+    });
+  }
   const step = useCallback(
-    (dir) => setActive((i) => (gallery.length ? (i + dir + gallery.length) % gallery.length : 0)),
-    [gallery.length]
+    (dir) => setActive((i) => (media.length ? (i + dir + media.length) % media.length : 0)),
+    [media.length]
+  );
+  // The full-size viewer is photos only, so its arrows skip over the video.
+  const videoIndex = media.findIndex((m) => m.type === 'video');
+  const stepPhoto = useCallback(
+    (dir) =>
+      setActive((i) => {
+        if (!media.length) return 0;
+        let j = (i + dir + media.length) % media.length;
+        if (j === videoIndex) j = (j + dir + media.length) % media.length;
+        return j;
+      }),
+    [media.length, videoIndex]
   );
 
   if (status === 'loading') {
@@ -255,7 +281,9 @@ export default function Product() {
     );
   }
 
-  const mainImage = gallery[active];
+  const current = media[active] || null;
+  const isVideo = current?.type === 'video';
+  const mainImage = !isVideo ? current?.src : null;
   const label = categoryLabel(product.category);
 
   return (
@@ -282,14 +310,29 @@ export default function Product() {
         <div className="pdp-grid">
           {/* -------------------------------------------------- gallery */}
           <div className="pdp-gallery">
-            <div className="gallery-main">
-              {mainImage ? (
+            <div className={`gallery-main${isVideo ? ' is-video' : ''}`}>
+              {isVideo ? (
+                /* preload="none": the file only downloads when someone presses
+                   play. Free storage includes 5 GB of downloads a month, and a
+                   video fetched on every page view would burn through it. The
+                   key makes switching photos stop the video instead of leaving
+                   it playing off-screen. */
+                <video
+                  key={current.src}
+                  src={current.src}
+                  poster={current.poster}
+                  controls
+                  playsInline
+                  preload="none"
+                  aria-label={`Video of ${product.title}`}
+                />
+              ) : mainImage ? (
                 <img src={mainImage} alt={product.title} />
               ) : (
                 <div className="swatch" />
               )}
-              <span className="gallery-grain" aria-hidden="true" />
-              <span className="gallery-sweep" aria-hidden="true" />
+              {!isVideo && <span className="gallery-grain" aria-hidden="true" />}
+              {!isVideo && <span className="gallery-sweep" aria-hidden="true" />}
               <span className="gallery-badge">One of one</span>
 
               {mainImage && (
@@ -299,31 +342,40 @@ export default function Product() {
                 </button>
               )}
 
-              {gallery.length > 1 && (
+              {media.length > 1 && (
                 <>
-                  <button type="button" className="gallery-arrow prev" onClick={() => step(-1)} aria-label="Previous photo">
+                  <button type="button" className="gallery-arrow prev" onClick={() => step(-1)} aria-label="Previous">
                     <svg viewBox="0 0 24 24"><use href="#ic-arrow" /></svg>
                   </button>
-                  <button type="button" className="gallery-arrow next" onClick={() => step(1)} aria-label="Next photo">
+                  <button type="button" className="gallery-arrow next" onClick={() => step(1)} aria-label="Next">
                     <svg viewBox="0 0 24 24"><use href="#ic-arrow" /></svg>
                   </button>
-                  <span className="gallery-count">{active + 1} / {gallery.length}</span>
+                  <span className="gallery-count">{active + 1} / {media.length}</span>
                 </>
               )}
             </div>
 
-            {gallery.length > 1 && (
+            {media.length > 1 && (
               <div className="gallery-thumbs">
-                {gallery.map((src, i) => (
+                {media.map((m, i) => (
                   <button
-                    key={src}
+                    key={m.src}
                     type="button"
-                    className={`thumb${i === active ? ' active' : ''}`}
+                    className={`thumb${i === active ? ' active' : ''}${m.type === 'video' ? ' thumb-video' : ''}`}
                     onClick={() => setActive(i)}
-                    aria-label={`Show photo ${i + 1}`}
+                    aria-label={m.type === 'video' ? 'Play the video' : `Show photo ${i + 1}`}
                     aria-pressed={i === active}
                   >
-                    <img src={src} alt="" loading="lazy" />
+                    {m.type === 'video' ? (
+                      <>
+                        {m.poster ? <img src={m.poster} alt="" loading="lazy" /> : <span className="thumb-blank" />}
+                        <span className="thumb-play" aria-hidden="true">
+                          <svg viewBox="0 0 24 24"><use href="#ic-play" /></svg>
+                        </span>
+                      </>
+                    ) : (
+                      <img src={m.src} alt="" loading="lazy" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -486,10 +538,10 @@ export default function Product() {
 
       {lightbox && mainImage && (
         <Lightbox
-          images={gallery}
-          index={active}
+          images={photos}
+          index={Math.max(0, photos.indexOf(mainImage))}
           onClose={() => setLightbox(false)}
-          onStep={step}
+          onStep={stepPhoto}
         />
       )}
     </Shell>

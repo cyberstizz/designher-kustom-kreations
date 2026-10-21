@@ -442,3 +442,22 @@
   .page-product .sk-img,
   .page-product .sk-line{animation:none;}
 }
+/* ------------------------------------------------------- product video */
+.page-product .gallery-main video{
+  width:100%;height:100%;display:block;
+  object-fit:contain;background:#0C080F;   /* show the whole clip, phone videos are taller than the frame */
+}
+.page-product .gallery-main.is-video .gallery-badge{pointer-events:none;}
+/* the arrows sit mid-frame; keep them clear of the native video controls */
+.page-product .gallery-main.is-video .gallery-arrow{top:42%;}
+
+.page-product .gallery-thumbs .thumb-video{position:relative;}
+.page-product .gallery-thumbs .thumb-blank{display:block;width:100%;height:100%;background:var(--ink);}
+.page-product .thumb-play{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:rgba(21,15,26,.35);
+}
+.page-product .thumb-play svg{
+  width:26px;height:26px;color:var(--bone);padding:6px;border-radius:50%;
+  background:rgba(176,20,47,.88);box-sizing:content-box;
+}
