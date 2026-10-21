@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
-  CATEGORIES,
+  DEFAULT_CATEGORIES,
   categoryLabel,
+  fetchCategories,
+  createCategory,
+  deleteCategory,
   slugify,
   fetchAllProducts,
   createProduct,
@@ -26,7 +29,7 @@ const BLANK = {
 };
 
 /* -------------------------------------------------------------- edit form */
-function ProductForm({ product, onSaved, onCancel }) {
+function ProductForm({ product, categories, onSaved, onCancel }) {
   const isNew = !product.id;
   const [form, setForm] = useState({ ...BLANK, ...product });
   const [slugTouched, setSlugTouched] = useState(!isNew);
@@ -166,12 +169,13 @@ function ProductForm({ product, onSaved, onCancel }) {
         value={form.category}
         onChange={(e) => set('category', e.target.value)}
       >
-        {CATEGORIES.map((c) => (
+        {categories.map((c) => (
           <option key={c.id} value={c.id}>
             {c.label}
           </option>
         ))}
       </select>
+      <p className="field-hint">Need a new one, like Belts or Bags? Add it under Categories on the main Products list.</p>
 
       <label htmlFor="p-blurb">Short line</label>
       <input
@@ -294,12 +298,45 @@ export default function ProductsPanel() {
   const [orderDirty, setOrderDirty] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
 
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const [newCategory, setNewCategory] = useState('');
+  const [categoryBusy, setCategoryBusy] = useState(false);
+
   async function load() {
-    const { data, error } = await fetchAllProducts();
+    const [{ data, error }, cats] = await Promise.all([
+      fetchAllProducts(),
+      fetchCategories({ fresh: true }),
+    ]);
     if (error) setError(error.message);
     else setRows(data);
+    setCategories(cats);
     setLoading(false);
   }
+
+  async function handleAddCategory(e) {
+    e.preventDefault();
+    if (!newCategory.trim()) return;
+    setCategoryBusy(true);
+    setError('');
+    const nextOrder = categories.reduce((max, c) => Math.max(max, c.sort_order ?? 0), 0) + 1;
+    const { error } = await createCategory(newCategory, nextOrder);
+    setCategoryBusy(false);
+    if (error) return setError(error.message);
+    setNewCategory('');
+    setCategories(await fetchCategories({ fresh: true }));
+  }
+
+  async function handleDeleteCategory(cat) {
+    if (!window.confirm(`Remove the "${cat.label}" category?`)) return;
+    setError('');
+    const { error } = await deleteCategory(cat.id, cat.label);
+    if (error) return setError(error.message);
+    setCategories(await fetchCategories({ fresh: true }));
+  }
+
+  // How many pieces sit in each category. A category with pieces in it
+  // can't be removed, so its remove button is hidden.
+  const countFor = (id) => rows.filter((r) => r.category === id).length;
 
   useEffect(() => {
     load();
@@ -347,6 +384,7 @@ export default function ProductsPanel() {
     return (
       <ProductForm
         product={editing}
+        categories={categories}
         onCancel={() => setEditing(null)}
         onSaved={() => {
           setEditing(null);
@@ -370,6 +408,46 @@ export default function ProductsPanel() {
         <span className="admin-count">
           {rows.length} {rows.length === 1 ? 'piece' : 'pieces'}
         </span>
+      </div>
+
+      <div className="category-manager">
+        <span className="cm-label">Categories</span>
+        <div className="cm-chips">
+          {categories.map((c) => {
+            const count = countFor(c.id);
+            return (
+              <span className="cm-chip" key={c.id}>
+                {c.label}
+                <small>{count}</small>
+                {count === 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteCategory(c)}
+                    aria-label={`Remove the ${c.label} category`}
+                  >
+                    ×
+                  </button>
+                )}
+              </span>
+            );
+          })}
+        </div>
+        <form className="cm-add" onSubmit={handleAddCategory}>
+          <input
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="New category, e.g. Belts"
+            maxLength={40}
+            aria-label="New category name"
+          />
+          <button className="btn-admin small" type="submit" disabled={categoryBusy || !newCategory.trim()}>
+            {categoryBusy ? 'Adding…' : 'Add category'}
+          </button>
+        </form>
+        <p className="field-hint">
+          New categories show up as a filter on the Shop page right away. A category
+          can only be removed once it has no pieces in it.
+        </p>
       </div>
 
       {orderDirty && (

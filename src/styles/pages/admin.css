@@ -455,3 +455,34 @@
   width:100%;max-width:280px;aspect-ratio:4/5;object-fit:cover;
   border-radius:6px;background:#000;border:1px solid var(--ink-line);
 }
+
+/* Category manager on the Products tab. */
+.page-admin .category-manager{
+  margin:0 0 24px;padding:18px 20px;background:var(--ink-soft);
+  border:1px solid var(--ink-line);border-radius:6px;
+}
+.page-admin .cm-label{
+  display:block;font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--champagne-soft);margin-bottom:12px;
+}
+.page-admin .cm-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.page-admin .cm-chip{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 8px 6px 12px;
+  border:1px solid var(--ink-line);border-radius:100px;font-size:13px;color:var(--bone);
+}
+.page-admin .cm-chip small{
+  font-family:var(--font-mono);font-size:10px;color:rgba(246,239,228,.5);
+  background:rgba(246,239,228,.08);padding:2px 6px;border-radius:100px;
+}
+.page-admin .cm-chip button{
+  width:20px;height:20px;border-radius:50%;border:0;cursor:pointer;line-height:1;
+  background:rgba(216,28,64,.18);color:#ff9aa8;font-size:14px;
+}
+.page-admin .cm-chip button:hover{background:rgba(216,28,64,.35);}
+.page-admin .cm-add{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:8px;}
+.page-admin .cm-add input{
+  flex:1;min-width:180px;background:var(--ink);color:var(--bone);
+  border:1px solid var(--ink-line);border-radius:4px;padding:11px 13px;
+  font-family:var(--font-body);font-size:16px;
+}
+.page-admin .cm-add .btn-admin{width:auto;}

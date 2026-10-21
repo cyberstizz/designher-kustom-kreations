@@ -24,7 +24,12 @@ async function sdk() {
   return mod.supabase;
 }
 
-export const CATEGORIES = [
+/* -------------------------------------------------------------- categories */
+
+// The categories now live in the database (supabase/013_categories.sql) so
+// Dianna can add her own. This list is only the starting point until that
+// loads, and the fallback if it can't — the same six that were here before.
+export const DEFAULT_CATEGORIES = [
   { id: 'sneakers', label: 'Sneakers' },
   { id: 'boots', label: 'Boots' },
   { id: 'jackets', label: 'Jackets' },
@@ -33,8 +38,69 @@ export const CATEGORIES = [
   { id: 'kids', label: 'Kids' },
 ];
 
+// Whatever was last loaded, so categoryLabel can stay a plain synchronous
+// call everywhere it's already used.
+let knownCategories = DEFAULT_CATEGORIES;
+
 export function categoryLabel(id) {
-  return CATEGORIES.find((c) => c.id === id)?.label || id;
+  const found = knownCategories.find((c) => c.id === id);
+  if (found) return found.label;
+  // Not loaded yet: 'belts' reads as 'Belts' rather than a raw id.
+  return String(id || '')
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+let categoriesPromise = null;
+
+/** All categories in display order. One request per page load, shared. */
+export function fetchCategories({ fresh = false } = {}) {
+  if (!isSupabaseConfigured) return Promise.resolve(DEFAULT_CATEGORIES);
+  if (fresh) categoriesPromise = null;
+  if (!categoriesPromise) {
+    categoriesPromise = rest('categories?select=id,label,sort_order&order=sort_order.asc,label.asc')
+      .then((rows) => {
+        knownCategories = rows?.length ? rows : DEFAULT_CATEGORIES;
+        return knownCategories;
+      })
+      .catch(() => {
+        categoriesPromise = null; // try again next time instead of caching the failure
+        return DEFAULT_CATEGORIES;
+      });
+  }
+  return categoriesPromise;
+}
+
+/** Add a category. The id is made from the name: "Belts & Bags" -> "belts-bags". */
+export async function createCategory(label, sortOrder) {
+  const clean = String(label || '').trim();
+  const id = slugify(clean);
+  if (!clean || !id) return { data: null, error: new Error('Give the category a name.') };
+  const supabase = await sdk();
+  const { data, error } = await supabase
+    .from('categories')
+    .insert([{ id, label: clean, sort_order: sortOrder }])
+    .select()
+    .single();
+  if (error?.code === '23505') {
+    return { data: null, error: new Error(`There is already a category called "${clean}".`) };
+  }
+  return { data, error };
+}
+
+/** Remove a category. The database refuses if any piece still uses it. */
+export async function deleteCategory(id, label) {
+  const supabase = await sdk();
+  const { error } = await supabase.from('categories').delete().eq('id', id);
+  if (error?.code === '23503') {
+    return {
+      error: new Error(
+        `"${label}" still has pieces in it. Move them to another category or delete them first.`
+      ),
+    };
+  }
+  return { error };
 }
 
 /** "Sapphire Row Converse" -> "sapphire-row-converse" */

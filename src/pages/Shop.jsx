@@ -3,9 +3,12 @@ import { Link, useSearchParams } from 'react-router-dom';
 import '../styles/pages/shop.css';
 import SiteHeader from '../components/SiteHeader.jsx';
 import SiteFooter from '../components/SiteFooter.jsx';
-import { CATEGORIES, categoryLabel, fetchPublishedProducts } from '../lib/products.js';
-
-const FILTERS = [{ id: 'all', label: 'All' }, ...CATEGORIES];
+import {
+  DEFAULT_CATEGORIES,
+  categoryLabel,
+  fetchCategories,
+  fetchPublishedProducts,
+} from '../lib/products.js';
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
@@ -13,10 +16,22 @@ export default function Shop() {
   const [unconfigured, setUnconfigured] = useState(false);
   const [error, setError] = useState('');
   const [params, setParams] = useSearchParams();
+  // Starts with the original six so the filter row never renders empty, then
+  // swaps in Dianna's list (including any she has added) once it loads.
+  const [categories, setCategories] = useState(DEFAULT_CATEGORIES);
+  const FILTERS = [{ id: 'all', label: 'All' }, ...categories];
 
   // The category lives in the URL so /shop?category=boots is shareable and the
   // browser back button behaves the way people expect.
   const active = params.get('category') || 'all';
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchCategories().then((list) => {
+      if (!cancelled) setCategories(list);
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;

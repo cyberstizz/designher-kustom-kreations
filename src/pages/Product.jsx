@@ -6,6 +6,7 @@ import SiteFooter from '../components/SiteFooter.jsx';
 import { CONTACT_EMAIL } from '../lib/site.js';
 import {
   categoryLabel,
+  fetchCategories,
   fetchProductBySlug,
   fetchPublishedProducts,
   galleryFor,
@@ -165,7 +166,9 @@ export default function Product() {
         if (!cancelled) setStatus('missing');
         return;
       }
-      const res = await fetchProductBySlug(slug);
+      // Categories load alongside, so a category Dianna added shows its real
+      // name in the breadcrumb ("Belts & Bags") rather than its id.
+      const [res] = await Promise.all([fetchProductBySlug(slug), fetchCategories()]);
       if (cancelled) return;
 
       if (res.unconfigured) return setStatus('unconfigured');
